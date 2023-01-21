@@ -2,8 +2,8 @@ package sqlstore_test
 
 import (
 	"github.com/kozyrev-m/keeper/internal/master/model"
-	"github.com/kozyrev-m/keeper/internal/master/storage"
-	"github.com/kozyrev-m/keeper/internal/master/storage/sqlstore"
+	"github.com/kozyrev-m/keeper/internal/master/storage/store"
+	"github.com/kozyrev-m/keeper/internal/master/storage/store/sqlstore"
 
 	"testing"
 
@@ -34,7 +34,7 @@ func TestUserRepository_FindUserByLogin(t *testing.T) {
 
 	login := "someuser"
 	_, err := s.FindUserByLogin(login)
-	assert.EqualError(t, err, storage.ErrRecordNotFound.Error())
+	assert.EqualError(t, err, store.ErrRecordNotFound.Error())
 
 	u := model.TestUser(t)
 	u.Login = login

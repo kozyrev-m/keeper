@@ -10,17 +10,20 @@ import (
 	"net/http"
 
 	"github.com/gorilla/mux"
+	"github.com/kozyrev-m/keeper/internal/master/storage/store"
 )
 
 // Server - lightweight server implementation for flexibility and independence.
 type Server struct {
 	router *mux.Router
+	store  store.Store
 }
 
 // New creates a http-server instance.
-func New() *Server {
+func New(store store.Store) *Server {
 	s := &Server {
 		router: mux.NewRouter(),
+		store: store,
 	}
 
 	s.configureRouter()
@@ -35,5 +38,5 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 // configureRouter prepares endpoints and middlewares.
 func (s *Server) configureRouter() {
-	// s.router.HandleFunc("/users", s.handleCreateUser()).Methods("POST")
+	s.router.HandleFunc("/users", s.handleRegisterUser()).Methods("POST")
 }

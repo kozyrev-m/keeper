@@ -5,7 +5,7 @@ import (
 	"database/sql"
 
 	"github.com/kozyrev-m/keeper/internal/master/model"
-	"github.com/kozyrev-m/keeper/internal/master/storage"
+	"github.com/kozyrev-m/keeper/internal/master/storage/store"
 )
 
 // Store contains sql storage implementation.
@@ -50,7 +50,7 @@ func (s *Store) FindUserByLogin(login string) (*model.User, error) {
 		&u.EncryptedPassword,
 	); err != nil {
 		if err == sql.ErrNoRows {
-			return nil, storage.ErrRecordNotFound
+			return nil, store.ErrRecordNotFound
 		}
 
 		return nil, err
