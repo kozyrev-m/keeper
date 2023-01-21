@@ -10,6 +10,7 @@ import (
 	"net/http"
 
 	"github.com/gorilla/mux"
+	"github.com/gorilla/sessions"
 	"github.com/kozyrev-m/keeper/internal/master/storage/store"
 )
 
@@ -17,13 +18,15 @@ import (
 type Server struct {
 	router *mux.Router
 	store  store.Store
+	sessionStore sessions.Store
 }
 
 // New creates a http-server instance.
-func New(store store.Store) *Server {
+func New(store store.Store, sessionStore sessions.Store) *Server {
 	s := &Server {
 		router: mux.NewRouter(),
 		store: store,
+		sessionStore: sessionStore,
 	}
 
 	s.configureRouter()
@@ -39,4 +42,5 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 // configureRouter prepares endpoints and middlewares.
 func (s *Server) configureRouter() {
 	s.router.HandleFunc("/users", s.handleRegisterUser()).Methods("POST")
+	s.router.HandleFunc("/sessions", s.handleCreateSession()).Methods("POST")
 }

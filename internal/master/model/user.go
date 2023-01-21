@@ -48,3 +48,13 @@ func encryptString(s string) (string, error) {
 
 	return string(b), nil
 }
+
+// ComparePassword compares the entered password with the encrypted one.
+func (u *User) ComparePassword(password string) bool {
+	return bcrypt.CompareHashAndPassword([]byte(u.EncryptedPassword), []byte(password)) == nil
+}
+
+// Sanitize cleanes field.
+func (u *User) Sanitize() {
+	u.Password = ""
+}
