@@ -11,7 +11,7 @@ import (
 
 // StartServer starts server.
 func StartServer(config *config.Config) error {
-	store, err := storage.CreateStore(config)
+	store, err := storage.CreateSqlStore(config)
 	if err != nil {
 		return err
 	}

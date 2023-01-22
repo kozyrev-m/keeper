@@ -11,18 +11,24 @@ import (
 
 	"github.com/gorilla/mux"
 	"github.com/gorilla/sessions"
-	"github.com/kozyrev-m/keeper/internal/master/storage/store"
+	"github.com/kozyrev-m/keeper/internal/master/model"
 )
+
+// Store is store iterface.
+type Store interface {
+	CreateUser(*model.User) error
+	FindUserByLogin(string) (*model.User, error)
+}
 
 // Server - lightweight server implementation for flexibility and independence.
 type Server struct {
 	router *mux.Router
-	store  store.Store
+	store  Store
 	sessionStore sessions.Store
 }
 
 // New creates a http-server instance.
-func New(store store.Store, sessionStore sessions.Store) *Server {
+func New(store Store, sessionStore sessions.Store) *Server {
 	s := &Server {
 		router: mux.NewRouter(),
 		store: store,
