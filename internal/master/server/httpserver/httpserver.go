@@ -18,6 +18,7 @@ import (
 type Store interface {
 	CreateUser(*model.User) error
 	FindUserByLogin(string) (*model.User, error)
+	FindUserByID(int) (*model.User, error)
 }
 
 // Server - lightweight server implementation for flexibility and independence.
@@ -49,4 +50,8 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 func (s *Server) configureRouter() {
 	s.router.HandleFunc("/users", s.handleRegisterUser()).Methods("POST")
 	s.router.HandleFunc("/sessions", s.handleCreateSession()).Methods("POST")
+
+	private := s.router.PathPrefix("/private").Subrouter()
+	private.Use(s.authenticateUser)
+	private.HandleFunc("/whoami", s.handleWhoami()).Methods("GET")
 }

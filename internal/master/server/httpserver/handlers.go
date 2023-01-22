@@ -2,6 +2,7 @@ package httpserver
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 
 	"github.com/kozyrev-m/keeper/internal/master/model"
@@ -63,6 +64,13 @@ func (s *Server) handleCreateSession() http.HandlerFunc {
 			return
 		}
 
-		s.respond(w, r, http.StatusOK, nil)
+		s.respond(w, r, http.StatusOK, fmt.Sprintf("session successfully created for the user '%s'", u.Login))
+	}
+}
+
+// handeWhoami gets information about user.
+func (s *Server) handleWhoami() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		s.respond(w, r, http.StatusOK, r.Context().Value(ctxKeyUser).(*model.User))
 	}
 }

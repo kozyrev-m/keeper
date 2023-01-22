@@ -58,3 +58,25 @@ func (s *Store) FindUserByLogin(login string) (*model.User, error) {
 
 	return u, nil
 }
+
+// FindUserByID finds user by login.
+func (s *Store) FindUserByID(id int) (*model.User, error) {
+	u := &model.User{}
+
+	if err := s.db.QueryRow(
+		"SELECT id, login, encrypted_password FROM users WHERE id = $1",
+		id,
+	).Scan(
+		&u.ID,
+		&u.Login,
+		&u.EncryptedPassword,
+	); err != nil {
+		if err == sql.ErrNoRows {
+			return nil, store.ErrRecordNotFound
+		}
+
+		return nil, err
+	}
+
+	return u, nil
+}

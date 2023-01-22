@@ -1,4 +1,4 @@
-package httpserver_test
+package httpserver
 
 import (
 	"bytes"
@@ -9,7 +9,6 @@ import (
 
 	"github.com/gorilla/sessions"
 	"github.com/kozyrev-m/keeper/internal/master/model"
-	"github.com/kozyrev-m/keeper/internal/master/server/httpserver"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
@@ -19,7 +18,7 @@ import (
 func TestServer_HandleRegisterUser(t *testing.T) {
 	store := &mockStore{}
 
-	s := httpserver.New(store, sessions.NewCookieStore([]byte("secret")))
+	s := New(store, sessions.NewCookieStore([]byte("secret")))
 
 	testCases := []struct {
 		name         string
@@ -83,7 +82,7 @@ func TestServer_HandleCreateSession(t *testing.T) {
 
 	store := &mockStore{}
 
-	s := httpserver.New(store, sessions.NewCookieStore([]byte("secret")))
+	s := New(store, sessions.NewCookieStore([]byte("secret")))
 
 	testCases := []struct {
 		name    string
