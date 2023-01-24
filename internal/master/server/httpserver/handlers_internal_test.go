@@ -68,7 +68,9 @@ func TestServer_HandleRegisterUser(t *testing.T) {
 			rec := httptest.NewRecorder()
 			b := &bytes.Buffer{}
 
-			json.NewEncoder(b).Encode(tc.payload)
+			err := json.NewEncoder(b).Encode(tc.payload)
+			require.NoError(t, err)
+
 			req, _ := http.NewRequest(http.MethodPost, "/users", b)
 			s.ServeHTTP(rec, req)
 
@@ -103,7 +105,9 @@ func TestServer_HandleCreateSession(t *testing.T) {
 						Password: u.Password,
 					}
 					
-					user.BeforeCreate()
+					err := user.BeforeCreate()
+					require.NoError(t, err)
+
 					user.ID = 1
 
 					require.Equal(t, login, user.Login)
@@ -145,7 +149,9 @@ func TestServer_HandleCreateSession(t *testing.T) {
 						Password: u.Password,
 					}
 					
-					user.BeforeCreate()
+					err := user.BeforeCreate()
+					require.NoError(t, err)
+
 					user.ID = 1
 
 					return user, nil
@@ -162,7 +168,10 @@ func TestServer_HandleCreateSession(t *testing.T) {
 
 			rec := httptest.NewRecorder()
 			b := &bytes.Buffer{}
-			json.NewEncoder(b).Encode(tc.payload)
+			
+			err := json.NewEncoder(b).Encode(tc.payload)
+			require.NoError(t, err)
+
 			req, _ := http.NewRequest(http.MethodPost, "/sessions", b)
 
 			s.ServeHTTP(rec, req)

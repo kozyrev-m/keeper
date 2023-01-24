@@ -8,6 +8,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 var (
@@ -39,7 +40,8 @@ func TestUserRepository_FindUserByLogin(t *testing.T) {
 	u := model.TestUser(t)
 	u.Login = login
 
-	s.CreateUser(u)
+	err = s.CreateUser(u)
+	require.NoError(t, err)
 
 	u, err = s.FindUserByLogin(login)
 	assert.NoError(t, err)
