@@ -8,6 +8,8 @@ import (
 )
 
 func main() {
+	log.Println("Hello!")
+
 	if err := server.StartServer(config.NewConfig()); err != nil {
 		log.Fatal(err)
 	}
