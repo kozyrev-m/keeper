@@ -42,8 +42,6 @@ func (f *Form) RegisterUser() {
 
 	form := tview.NewForm()
 
-	// form.Clear(true)
-
     form.AddInputField("Login", "", 20, nil, func(login string) {
         user.Login = login
     })
@@ -73,14 +71,10 @@ func (f *Form) Login() {
     })
 
 	f.formLogin.AddButton("Send", func() {
-		// fmt.Printf("Test: %+v\n", user)
-
 		f.text.Clear().SetTextColor(tcell.ColorGreen).
 		SetText(auth)
 
 		if err := f.terminal.client.LoginUser(user); err != nil {
-			// fmt.Printf("ERROR: %s", err.Error())
-
 			f.text.Clear().SetTextColor(tcell.ColorGreen).
 			SetText(notauth).
 			SetTextColor(tcell.ColorRed).SetText(err.Error())
@@ -95,16 +89,12 @@ func (f *Form) Whoami() {
 	if err != nil {
 		f.text.Clear().SetTextColor(tcell.ColorRed).SetText(err.Error())
 	}
-	// fmt.Printf("Hello %s (%d)", u.Login, u.ID)
 
 	txt := fmt.Sprintf("Hello %s (%d)", u.Login, u.ID)
 	f.formWhoami.AddTextArea("", txt, 22, 1, len(txt), func(text string) {
 		fmt.Printf("Hello %s (%d)", u.Login, u.ID)
-
-		// text.SetTextColor(tcell.ColorGreen).SetText(fmt.Sprintf("Hello %s (%d)", u.Login, u.ID))
 	})
 
-	// text.Clear().SetTextColor(tcell.ColorGreen).SetText(fmt.Sprintf("Hello %s (%d)", u.Login, u.ID))
 	
 	// pages.SwitchToPage("Whoami")
 }

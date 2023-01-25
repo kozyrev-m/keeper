@@ -33,17 +33,11 @@ func NewTerminal() *Terminal {
 
 // initTerminal...
 func (t *Terminal) initTerminal() {
-	t.app.SetInputCapture(func(event *tcell.EventKey) *tcell.EventKey {
-		if event.Rune() == 81 {
-			t.app.Stop()
-		}
-		return event
-	})
-
 	t.pages.AddPage("Menu", t.form.text, true, true)
 	t.pages.AddPage("Register User", t.form.formRegister, true, false)
 	t.pages.AddPage("Login User", t.form.formLogin, true, false)
 	t.pages.AddPage("Whoami", t.form.formWhoami, true, false)
+
 
 	t.app.SetInputCapture(func(event *tcell.EventKey) *tcell.EventKey {
 		if event.Rune() == 81 {
