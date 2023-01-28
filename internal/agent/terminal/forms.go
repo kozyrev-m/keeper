@@ -40,17 +40,15 @@ func NewForm(t *Terminal) *Form {
 func (f *Form) RegisterUser() {
     user := &model.User{}
 
-	form := tview.NewForm()
-
-    form.AddInputField("Login", "", 20, nil, func(login string) {
+    f.formRegister.AddInputField("Login", "", 20, nil, func(login string) {
         user.Login = login
     })
 
-    form.AddInputField("Password", "", 20, nil, func(password string) {
+    f.formRegister.AddInputField("Password", "", 20, nil, func(password string) {
         user.Password = password
     })
 
-	form.AddButton("Save", func() {
+	f.formRegister.AddButton("Save", func() {
 		fmt.Printf("Test: %+v\n", user)
 		if err := f.terminal.client.RegisterUser(user); err != nil {
 			fmt.Printf("ERROR: %s", err.Error())

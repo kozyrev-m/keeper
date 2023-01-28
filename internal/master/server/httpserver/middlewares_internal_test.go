@@ -8,14 +8,14 @@ import (
 
 	"github.com/gorilla/securecookie"
 	"github.com/gorilla/sessions"
-	"github.com/kozyrev-m/keeper/internal/master/model"
+	"github.com/kozyrev-m/keeper/internal/master/model/usermodel"
 	"github.com/stretchr/testify/assert"
 )
 
 func TestServer_AuthenticateUser(t *testing.T) {
 	sessionName := "session"
 
-	u := model.TestUser(t)
+	u := usermodel.TestUser(t)
 	u.ID = 1
 
 	store := &mockStore{}
@@ -32,7 +32,7 @@ func TestServer_AuthenticateUser(t *testing.T) {
 				"user_id": u.ID,
 			},
 			initMock: func() {
-				store.findUserByID = func(id int) (*model.User, error) {
+				store.findUserByID = func(id int) (*usermodel.User, error) {
 					return u, nil
 				}
 			},

@@ -1,5 +1,5 @@
-// Package model contains models.
-package model
+// Package usermodel contains model of user.
+package usermodel
 
 import (
 	"github.com/go-ozzo/ozzo-validation"

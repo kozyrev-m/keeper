@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/kozyrev-m/keeper/internal/master/model"
+	"github.com/kozyrev-m/keeper/internal/master/model/usermodel"
 )
 
 // handleRegisterUser creates new user in the system.
@@ -18,7 +18,7 @@ func (s *Server) handleRegisterUser() http.HandlerFunc {
 			return
 		}
 
-		u := &model.User{
+		u := &usermodel.User{
 			Login:    req.Login,
 			Password: req.Password,
 		}
@@ -71,6 +71,6 @@ func (s *Server) handleCreateSession() http.HandlerFunc {
 // handeWhoami gets information about user.
 func (s *Server) handleWhoami() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		s.respond(w, r, http.StatusOK, r.Context().Value(ctxKeyUser).(*model.User))
+		s.respond(w, r, http.StatusOK, r.Context().Value(ctxKeyUser).(*usermodel.User))
 	}
 }

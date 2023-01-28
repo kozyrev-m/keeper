@@ -1,7 +1,7 @@
-package model_test
+package usermodel_test
 
 import (
-	"github.com/kozyrev-m/keeper/internal/master/model"
+	"github.com/kozyrev-m/keeper/internal/master/model/usermodel"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -10,21 +10,21 @@ import (
 func TestUser_Validate(t *testing.T) {
 	testCases := []struct {
 		name    string
-		payload func() *model.User
+		payload func() *usermodel.User
 		isValid bool
 	} {
 		{
 			name: "valid",
-			payload: func() *model.User {
-				u := model.TestUser(t)
+			payload: func() *usermodel.User {
+				u := usermodel.TestUser(t)
 				return u
 			},
 			isValid: true,
 		},
 		{
 			name: "empty login",
-			payload: func() *model.User {
-				u := model.TestUser(t)
+			payload: func() *usermodel.User {
+				u := usermodel.TestUser(t)
 				u.Login = ""
 				return u
 			},
@@ -32,8 +32,8 @@ func TestUser_Validate(t *testing.T) {
 		},
 		{
 			name: "empty password",
-			payload: func() *model.User {
-				u := model.TestUser(t)
+			payload: func() *usermodel.User {
+				u := usermodel.TestUser(t)
 				u.Password = ""
 				return u
 			},
@@ -41,8 +41,8 @@ func TestUser_Validate(t *testing.T) {
 		},
 		{
 			name: "short password",
-			payload: func() *model.User {
-				u := model.TestUser(t)
+			payload: func() *usermodel.User {
+				u := usermodel.TestUser(t)
 				u.Password = "short"
 				return u
 			},
@@ -66,7 +66,7 @@ func TestUser_Validate(t *testing.T) {
 }
 
 func TestUser_BeforeCreate(t *testing.T) {
-	u := model.TestUser(t)
+	u := usermodel.TestUser(t)
 	assert.NoError(t, u.BeforeCreate())
 	assert.NotEmpty(t, u.EncryptedPassword)
 }

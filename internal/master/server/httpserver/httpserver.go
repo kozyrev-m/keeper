@@ -11,14 +11,14 @@ import (
 
 	"github.com/gorilla/mux"
 	"github.com/gorilla/sessions"
-	"github.com/kozyrev-m/keeper/internal/master/model"
+	"github.com/kozyrev-m/keeper/internal/master/model/usermodel"
 )
 
 // Store is store iterface.
 type Store interface {
-	CreateUser(*model.User) error
-	FindUserByLogin(string) (*model.User, error)
-	FindUserByID(int) (*model.User, error)
+	CreateUser(*usermodel.User) error
+	FindUserByLogin(string) (*usermodel.User, error)
+	FindUserByID(int) (*usermodel.User, error)
 }
 
 // Server - lightweight server implementation for flexibility and independence.
