@@ -1,19 +1,16 @@
 package datamodel
 
-type Content interface {
-	Encrypt() (string, error)
-	Decrypt(string) error
-}
-
 // Text contains text.
 type Text struct {
-	Text string
+	Value string
 }
 
+// Encrypt encrypts content.
 func (t *Text) Encrypt() (string, error) {
 	return "", nil
 }
 
+// Decrypt decrypts content.
 func (t *Text) Decrypt(enc string) error {
 	return nil
 }
