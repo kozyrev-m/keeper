@@ -77,7 +77,7 @@ func (s *Server) handleWhoami() http.HandlerFunc {
 }
 
 // handleAddText adds some text.
-func (s *Server) handleCreatePrivateText() http.HandlerFunc {
+func (s *Server) handleCreateRecordWithText() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		req := &requestText{}
 		if err := json.NewDecoder(r.Body).Decode(req); err != nil {

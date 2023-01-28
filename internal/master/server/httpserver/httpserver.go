@@ -58,5 +58,5 @@ func (s *Server) configureRouter() {
 	private.Use(s.authenticateUser)
 	private.HandleFunc("/whoami", s.handleWhoami()).Methods("GET")
 
-	private.HandleFunc("/text", s.handleCreatePrivateText()).Methods(http.MethodPost)
+	private.HandleFunc("/text", s.handleCreateRecordWithText()).Methods(http.MethodPost)
 }
