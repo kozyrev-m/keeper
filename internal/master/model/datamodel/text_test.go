@@ -19,7 +19,8 @@ func TestText_EncryptDecrypt(t *testing.T) {
 		require.NoError(t, err)
 	
 		newText := &datamodel.Text{}
-		newText.Decrypt(enc)
+		err = newText.Decrypt(enc)
+		require.NoError(t, err)
 	
 		assert.Equal(t, text.Value, newText.Value)
 	})
@@ -35,7 +36,8 @@ func TestText_EncryptDecrypt(t *testing.T) {
 		withsalt := strings.Join([]string{enc, "salt"}, "")
 
 		newText := &datamodel.Text{}
-		newText.Decrypt(withsalt)
+		err = newText.Decrypt(withsalt)
+		require.Error(t, err)
 	
 		assert.NotEqual(t, text.Value, newText.Value)
 	})

@@ -19,3 +19,32 @@ type DataRecord struct {
 
 	Metadata string
 }
+
+// New creates data record with content implementation.
+func New(typeid int) *DataRecord {
+	r := &DataRecord{
+		TypeID: typeid,
+	}
+	if typeid == 1 { // text has typeid = 1
+		r.Content = &Text{}
+	}
+
+	return r
+}
+
+// BeforeCreate prepares data record to insert to store.
+func (d *DataRecord) BeforeCreate() error {
+	enc, err := d.Content.Encrypt()
+	if err != nil {
+		return err
+	}
+
+	d.EncodedContent = enc
+
+	return nil
+}
+
+// AfterReceive prepares data record after receive from store.
+func (d *DataRecord) AfterReceive() error {
+	return d.Content.Decrypt(d.EncodedContent)
+}
