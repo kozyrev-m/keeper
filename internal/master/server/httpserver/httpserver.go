@@ -11,6 +11,7 @@ import (
 
 	"github.com/gorilla/mux"
 	"github.com/gorilla/sessions"
+	"github.com/kozyrev-m/keeper/internal/master/model/datamodel"
 	"github.com/kozyrev-m/keeper/internal/master/model/usermodel"
 )
 
@@ -19,20 +20,22 @@ type Store interface {
 	CreateUser(*usermodel.User) error
 	FindUserByLogin(string) (*usermodel.User, error)
 	FindUserByID(int) (*usermodel.User, error)
+
+	CreateDataRecord(*datamodel.DataRecord) error
 }
 
 // Server - lightweight server implementation for flexibility and independence.
 type Server struct {
-	router *mux.Router
-	store  Store
+	router       *mux.Router
+	store        Store
 	sessionStore sessions.Store
 }
 
 // New creates a http-server instance.
 func New(store Store, sessionStore sessions.Store) *Server {
-	s := &Server {
-		router: mux.NewRouter(),
-		store: store,
+	s := &Server{
+		router:       mux.NewRouter(),
+		store:        store,
 		sessionStore: sessionStore,
 	}
 
@@ -54,4 +57,6 @@ func (s *Server) configureRouter() {
 	private := s.router.PathPrefix("/private").Subrouter()
 	private.Use(s.authenticateUser)
 	private.HandleFunc("/whoami", s.handleWhoami()).Methods("GET")
+
+	private.HandleFunc("/text", s.handleCreatePrivateText()).Methods(http.MethodPost)
 }

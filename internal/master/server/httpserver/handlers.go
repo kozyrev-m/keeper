@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/kozyrev-m/keeper/internal/master/model/datamodel"
 	"github.com/kozyrev-m/keeper/internal/master/model/usermodel"
 )
 
@@ -45,7 +46,7 @@ func (s *Server) handleCreateSession() http.HandlerFunc {
 		}
 
 		u, err := s.store.FindUserByLogin(req.Login)
-		
+
 		if err != nil || !u.ComparePassword(req.Password) {
 			s.error(w, r, http.StatusUnauthorized, errIncorrectLoginOrPassword)
 			return
@@ -72,5 +73,31 @@ func (s *Server) handleCreateSession() http.HandlerFunc {
 func (s *Server) handleWhoami() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		s.respond(w, r, http.StatusOK, r.Context().Value(ctxKeyUser).(*usermodel.User))
+	}
+}
+
+// handleAddText adds some text.
+func (s *Server) handleCreatePrivateText() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		req := &requestText{}
+		if err := json.NewDecoder(r.Body).Decode(req); err != nil {
+			s.error(w, r, http.StatusBadRequest, err)
+			return
+		}
+
+		u := r.Context().Value(ctxKeyUser).(*usermodel.User)
+
+		content := &datamodel.Text{Value: req.Text}
+
+		data := &datamodel.DataRecord{
+			OwnerID:  u.ID,
+			TypeID:   1,
+			Metadata: req.Metadata,
+			Content:  content,
+		}
+
+		s.store.CreateDataRecord(data)
+
+		s.respond(w, r, http.StatusCreated, req)
 	}
 }
