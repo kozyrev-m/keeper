@@ -96,7 +96,10 @@ func (s *Server) handleCreateRecordWithText() http.HandlerFunc {
 			Content:  content,
 		}
 
-		s.store.CreateDataRecord(data)
+		if err := s.store.CreateDataRecord(data); err != nil {
+			s.error(w, r, http.StatusUnprocessableEntity, err)
+			return 
+		}
 
 		s.respond(w, r, http.StatusCreated, req)
 	}
