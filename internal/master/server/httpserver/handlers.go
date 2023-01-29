@@ -87,16 +87,25 @@ func (s *Server) handleCreateRecordWithText() http.HandlerFunc {
 
 		u := r.Context().Value(ctxKeyUser).(*usermodel.User)
 
-		content := &datamodel.Text{Value: req.Text}
+		content := &datamodel.Text{
+			BasePart: datamodel.BasePart{
+				OwnerID: u.ID,
+				TypeID: 1,
+				Metadata: req.Metadata,
+			},
+			Value: req.Text,
+		}
 
+		/*
 		data := &datamodel.DataRecord{
 			OwnerID:  u.ID,
 			TypeID:   1,
 			Metadata: req.Metadata,
 			Content:  content,
 		}
+		*/
 
-		if err := s.store.CreateDataRecord(data); err != nil {
+		if err := s.store.CreateDataRecord(content); err != nil {
 			s.error(w, r, http.StatusUnprocessableEntity, err)
 			return 
 		}

@@ -11,8 +11,8 @@ import (
 
 	"github.com/gorilla/mux"
 	"github.com/gorilla/sessions"
-	"github.com/kozyrev-m/keeper/internal/master/model/datamodel"
 	"github.com/kozyrev-m/keeper/internal/master/model/usermodel"
+	"github.com/kozyrev-m/keeper/internal/master/storage/store/sqlstore"
 )
 
 // Store is store iterface.
@@ -21,7 +21,7 @@ type Store interface {
 	FindUserByLogin(string) (*usermodel.User, error)
 	FindUserByID(int) (*usermodel.User, error)
 
-	CreateDataRecord(*datamodel.DataRecord) error
+	CreateDataRecord(sqlstore.Content) error
 }
 
 // Server - lightweight server implementation for flexibility and independence.

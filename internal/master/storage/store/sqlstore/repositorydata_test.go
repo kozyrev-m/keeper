@@ -17,19 +17,16 @@ func TestDataRepository_CreateDataRecord(t *testing.T) {
 	s := sqlstore.New(db)
 
 	text := &datamodel.Text{
+		BasePart: datamodel.BasePart{
+			OwnerID: 1,
+			TypeID: 1,
+			Metadata: "some metadata",
+		},
 		Value: "some text for testing",
 	}
 
-	dr := &datamodel.DataRecord{
-		TypeID: 1,
-		OwnerID: 1,
-		Metadata: "some metadata",
-		Content: text,
-	}
-
-	err := s.CreateDataRecord(dr)
+	err := s.CreateDataRecord(text)
 	require.NoError(t, err)
 
-	assert.NoError(t, err)
-	assert.NotNil(t, dr.ID)
+	assert.NotEmpty(t, text.ID)
 }

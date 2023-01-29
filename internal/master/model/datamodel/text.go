@@ -1,17 +1,21 @@
 package datamodel
 
-const (
-	password = "secretkey"
-)
-
 // Text contains text.
 type Text struct {
-	Value string
+	BasePart
+	Value string // Main part of the record
 }
 
 // Encrypt encrypts content.
-func (t *Text) Encrypt() (string, error) {
-	return encrypt(password, t.Value)
+func (t *Text) Encrypt() error {
+	enc, err := encrypt(password, t.Value)
+	if err != nil {
+		return err
+	}
+
+	t.EncodedContent = enc
+
+	return nil
 }
 
 // Decrypt decrypts content.

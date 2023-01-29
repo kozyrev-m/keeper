@@ -1,8 +1,8 @@
 package httpserver
 
 import (
-	"github.com/kozyrev-m/keeper/internal/master/model/datamodel"
 	"github.com/kozyrev-m/keeper/internal/master/model/usermodel"
+	"github.com/kozyrev-m/keeper/internal/master/storage/store/sqlstore"
 )
 
 type mockStore struct {
@@ -10,7 +10,7 @@ type mockStore struct {
 	findUserByLogin func(login string) (*usermodel.User, error)
 	findUserByID    func(id int) (*usermodel.User, error)
 
-	createDataRecord func(d *datamodel.DataRecord) error
+	createDataRecord func(c sqlstore.Content) error
 }
 
 func (ms *mockStore) CreateUser(m *usermodel.User) error {
@@ -25,6 +25,6 @@ func (ms *mockStore) FindUserByID(id int) (*usermodel.User, error) {
 	return ms.findUserByID(id)
 }
 
-func (ms *mockStore) CreateDataRecord(d *datamodel.DataRecord) error {
-	return ms.createDataRecord(d)
+func (ms *mockStore) CreateDataRecord(c sqlstore.Content) error {
+	return ms.createDataRecord(c)
 }
