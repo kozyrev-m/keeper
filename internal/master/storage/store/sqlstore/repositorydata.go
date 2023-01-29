@@ -2,10 +2,13 @@ package sqlstore
 
 import (
 	"database/sql"
+	"fmt"
 	"log"
+	"mime/multipart"
 
 	"github.com/kozyrev-m/keeper/internal/master/model/datamodel"
 	"github.com/kozyrev-m/keeper/internal/master/storage/store"
+	"github.com/kozyrev-m/keeper/internal/master/storage/store/filestorage"
 )
 
 const (
@@ -101,4 +104,43 @@ func (s *Store) findRecords(ownerID int, typeID int) ([]datamodel.BasePart, erro
 	}
 
 	return baseParts, nil
+}
+
+func (s *Store) CreateFile(ownerID int, metadata string, filename string, file multipart.File) error {
+	filepath := fmt.Sprintf("%s/%d/%s", filestorage.Dir, ownerID, filename)
+
+	tx, err := s.db.Begin()
+	if err != nil {
+		return err
+	}
+
+	defer func () {
+		if err := tx.Rollback(); err != nil {
+			log.Println(err)
+		}
+	} ()
+
+	if _, err := tx.Exec(
+		"INSERT INTO files (owner_id, metadata, filepath) VALUES (?, ?, ?)",
+		ownerID,
+		metadata,
+		filepath,
+	); err != nil {
+		return err
+	}
+
+	// create file on disk
+	if err := filestorage.CreateFile(ownerID, filename, file); err != nil {
+		return err
+	}
+
+	if err := tx.Commit(); err != nil {
+		if errIn := filestorage.DeleteFile(filepath); errIn != nil {
+			return errIn
+		}
+
+		return err
+	}
+	
+	return nil
 }
