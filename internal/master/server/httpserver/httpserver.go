@@ -7,6 +7,7 @@
 package httpserver
 
 import (
+	"mime/multipart"
 	"net/http"
 
 	"github.com/gorilla/mux"
@@ -24,6 +25,8 @@ type Store interface {
 
 	CreateDataRecord(sqlstore.Content) error
 	FindTextsByOwner(int) ([]datamodel.Text, error)
+
+	CreateFile(int, string, string, multipart.File) error
 }
 
 // Server - lightweight server implementation for flexibility and independence.
@@ -62,4 +65,6 @@ func (s *Server) configureRouter() {
 
 	private.HandleFunc("/text", s.handleCreateText()).Methods(http.MethodPost)
 	private.HandleFunc("/text", s.handleGetTexts()).Methods(http.MethodGet)
+
+	private.HandleFunc("/file", s.handleSaveFile()).Methods(http.MethodPost)
 }

@@ -27,11 +27,11 @@ type Content interface {
 
 // CreateDataRecord creates record with content.
 func (s *Store) CreateDataRecord(c Content) error {
-	
+
 	if err := c.Encrypt(); err != nil {
 		return err
 	}
-	
+
 	var id int
 	if err := s.db.QueryRow(
 		"INSERT INTO private_data (owner_id, type_id, metadata, content) VALUES ($1, $2, $3, $4) RETURNING id",
@@ -88,15 +88,15 @@ func (s *Store) findRecords(ownerID int, typeID int) ([]datamodel.BasePart, erro
 		return nil, err
 	}
 
-	defer func () {
+	defer func() {
 		if err := rows.Close(); err != nil {
 			log.Println(err)
 		}
-	} ()
+	}()
 
 	for rows.Next() {
 		b := datamodel.BasePart{}
-		
+
 		if err := rows.Scan(&b.ID, &b.OwnerID, &b.TypeID, &b.Metadata, &b.EncryptedContent); err != nil {
 			return nil, err
 		}
@@ -106,6 +106,7 @@ func (s *Store) findRecords(ownerID int, typeID int) ([]datamodel.BasePart, erro
 	return baseParts, nil
 }
 
+// CreateFile creates file on disk and file record on db.
 func (s *Store) CreateFile(ownerID int, metadata string, filename string, file multipart.File) error {
 	filepath := fmt.Sprintf("%s/%d/%s", filestorage.Dir, ownerID, filename)
 
@@ -114,14 +115,14 @@ func (s *Store) CreateFile(ownerID int, metadata string, filename string, file m
 		return err
 	}
 
-	defer func () {
+	defer func() {
 		if err := tx.Rollback(); err != nil {
 			log.Println(err)
 		}
-	} ()
+	}()
 
 	if _, err := tx.Exec(
-		"INSERT INTO files (owner_id, metadata, filepath) VALUES (?, ?, ?)",
+		"INSERT INTO files (owner_id, metadata, filepath) VALUES ($1, $2, $3)",
 		ownerID,
 		metadata,
 		filepath,
@@ -141,6 +142,6 @@ func (s *Store) CreateFile(ownerID int, metadata string, filename string, file m
 
 		return err
 	}
-	
+
 	return nil
 }

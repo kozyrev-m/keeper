@@ -89,8 +89,8 @@ func (s *Server) handleCreateText() http.HandlerFunc {
 
 		content := &datamodel.Text{
 			BasePart: datamodel.BasePart{
-				OwnerID: u.ID,
-				TypeID: 1,
+				OwnerID:  u.ID,
+				TypeID:   1,
 				Metadata: req.Metadata,
 			},
 			Value: req.Text,
@@ -98,7 +98,7 @@ func (s *Server) handleCreateText() http.HandlerFunc {
 
 		if err := s.store.CreateDataRecord(content); err != nil {
 			s.error(w, r, http.StatusUnprocessableEntity, err)
-			return 
+			return
 		}
 
 		s.respond(w, r, http.StatusCreated, req)
@@ -113,7 +113,7 @@ func (s *Server) handleGetTexts() http.HandlerFunc {
 		texts, err := s.store.FindTextsByOwner(u.ID)
 		if err != nil {
 			s.error(w, r, http.StatusUnprocessableEntity, err)
-			return 
+			return
 		}
 
 		b, err := json.Marshal(texts)
@@ -123,5 +123,25 @@ func (s *Server) handleGetTexts() http.HandlerFunc {
 		}
 
 		s.respond(w, r, http.StatusOK, string(b))
+	}
+}
+
+// handleSaveFile saves user file.
+func (s *Server) handleSaveFile() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		u := r.Context().Value(ctxKeyUser).(*usermodel.User)
+
+		file, fheader, err := r.FormFile("file")
+		if err != nil {
+			s.error(w, r, http.StatusInternalServerError, err)
+			return
+		}
+
+		if err := s.store.CreateFile(u.ID, "some metadata", fheader.Filename, file); err != nil {
+			s.error(w, r, http.StatusUnprocessableEntity, err)
+			return
+		}
+
+		s.respond(w, r, http.StatusOK, "")
 	}
 }
