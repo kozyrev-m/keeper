@@ -5,6 +5,7 @@ CREATE TABLE users (
     login VARCHAR UNIQUE,
     encrypted_password VARCHAR
 );
+
 CREATE TABLE private_data (
     id BIGSERIAL NOT NULL PRIMARY KEY,
     owner_id INT NOT NULL,
@@ -13,10 +14,19 @@ CREATE TABLE private_data (
     content VARCHAR NOT NULL,
     created_date TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL
 );
+
+CREATE TABLE files (
+    id BIGSERIAL NOT NULL PRIMARY KEY,
+    owner_id INT NOT NULL,
+    metadata VARCHAR NOT NULL,
+    filepath VARCHAR NOT NULL,
+    created_date TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL
+);
 -- +goose StatementEnd
 
 -- +goose Down
 -- +goose StatementBegin
 DROP TABLE users;
 DROP TABLE private_data;
+DROP TABLE files;
 -- +goose StatementEnd
