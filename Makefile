@@ -13,4 +13,10 @@ hello:
 	@echo "1. test"
 	@echo "2. test-coverage"
 
+migrations-up:
+	goose -dir=./migrations postgres "host=localhost port=5432 dbname=keeper password=12345 sslmode=disable" up
+
+migrations-down:
+	goose -dir=./migrations postgres "host=localhost port=5432 dbname=keeper password=12345 sslmode=disable" down
+
 .DEFAULT_GOAL= hello

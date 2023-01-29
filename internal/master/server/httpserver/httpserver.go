@@ -11,28 +11,33 @@ import (
 
 	"github.com/gorilla/mux"
 	"github.com/gorilla/sessions"
-	"github.com/kozyrev-m/keeper/internal/master/model"
+	"github.com/kozyrev-m/keeper/internal/master/model/datamodel"
+	"github.com/kozyrev-m/keeper/internal/master/model/usermodel"
+	"github.com/kozyrev-m/keeper/internal/master/storage/store/sqlstore"
 )
 
 // Store is store iterface.
 type Store interface {
-	CreateUser(*model.User) error
-	FindUserByLogin(string) (*model.User, error)
-	FindUserByID(int) (*model.User, error)
+	CreateUser(*usermodel.User) error
+	FindUserByLogin(string) (*usermodel.User, error)
+	FindUserByID(int) (*usermodel.User, error)
+
+	CreateDataRecord(sqlstore.Content) error
+	FindTextsByOwner(int) ([]datamodel.Text, error)
 }
 
 // Server - lightweight server implementation for flexibility and independence.
 type Server struct {
-	router *mux.Router
-	store  Store
+	router       *mux.Router
+	store        Store
 	sessionStore sessions.Store
 }
 
 // New creates a http-server instance.
 func New(store Store, sessionStore sessions.Store) *Server {
-	s := &Server {
-		router: mux.NewRouter(),
-		store: store,
+	s := &Server{
+		router:       mux.NewRouter(),
+		store:        store,
 		sessionStore: sessionStore,
 	}
 
@@ -54,4 +59,7 @@ func (s *Server) configureRouter() {
 	private := s.router.PathPrefix("/private").Subrouter()
 	private.Use(s.authenticateUser)
 	private.HandleFunc("/whoami", s.handleWhoami()).Methods("GET")
+
+	private.HandleFunc("/text", s.handleCreateText()).Methods(http.MethodPost)
+	private.HandleFunc("/text", s.handleGetTexts()).Methods(http.MethodGet)
 }

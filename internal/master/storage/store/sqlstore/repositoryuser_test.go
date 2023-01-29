@@ -1,7 +1,7 @@
 package sqlstore_test
 
 import (
-	"github.com/kozyrev-m/keeper/internal/master/model"
+	"github.com/kozyrev-m/keeper/internal/master/model/usermodel"
 	"github.com/kozyrev-m/keeper/internal/master/storage/store"
 	"github.com/kozyrev-m/keeper/internal/master/storage/store/sqlstore"
 
@@ -20,7 +20,7 @@ func TestUserRepository_CreateUser(t *testing.T) {
 	defer teardown()
 	
 	s := sqlstore.New(db)
-	u := model.TestUser(t)
+	u := usermodel.TestUser(t)
 	err := s.CreateUser(u)
 
 	assert.NoError(t, err)
@@ -37,7 +37,7 @@ func TestUserRepository_FindUserByLogin(t *testing.T) {
 	_, err := s.FindUserByLogin(login)
 	assert.EqualError(t, err, store.ErrRecordNotFound.Error())
 
-	u := model.TestUser(t)
+	u := usermodel.TestUser(t)
 	u.Login = login
 
 	err = s.CreateUser(u)

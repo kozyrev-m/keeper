@@ -8,7 +8,7 @@ import (
 	"testing"
 
 	"github.com/gorilla/sessions"
-	"github.com/kozyrev-m/keeper/internal/master/model"
+	"github.com/kozyrev-m/keeper/internal/master/model/usermodel"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
@@ -33,7 +33,7 @@ func TestServer_HandleRegisterUser(t *testing.T) {
 				"password": "password",
 			},
 			initMock: func() {
-				store.createUser = func(m *model.User) error {
+				store.createUser = func(m *usermodel.User) error {
 					m.ID = 1
 					return nil
 				}
@@ -53,7 +53,7 @@ func TestServer_HandleRegisterUser(t *testing.T) {
 				"password": "password",
 			},
 			initMock: func() {
-				store.createUser = func(m *model.User) error {
+				store.createUser = func(m *usermodel.User) error {
 					return errors.New("can't insert user -- something bad happened")
 				}
 			},
@@ -80,7 +80,7 @@ func TestServer_HandleRegisterUser(t *testing.T) {
 }
 
 func TestServer_HandleCreateSession(t *testing.T) {
-	u := model.TestUser(t)
+	u := usermodel.TestUser(t)
 
 	store := &mockStore{}
 
@@ -99,8 +99,8 @@ func TestServer_HandleCreateSession(t *testing.T) {
 				"password": u.Password,
 			},
 			initMock: func() {
-				store.findUserByLogin = func(login string) (*model.User, error) {
-					user := &model.User {
+				store.findUserByLogin = func(login string) (*usermodel.User, error) {
+					user := &usermodel.User {
 						Login: u.Login,
 						Password: u.Password,
 					}
@@ -130,7 +130,7 @@ func TestServer_HandleCreateSession(t *testing.T) {
 				"password": u.Password,
 			},
 			initMock: func() {
-				store.findUserByLogin = func(login string) (*model.User, error) {
+				store.findUserByLogin = func(login string) (*usermodel.User, error) {
 					return nil, errors.New("not find user")
 				}
 			},
@@ -143,8 +143,8 @@ func TestServer_HandleCreateSession(t *testing.T) {
 				"password": "incorrect",
 			},
 			initMock: func() {
-				store.findUserByLogin = func(login string) (*model.User, error) {
-					user := &model.User {
+				store.findUserByLogin = func(login string) (*usermodel.User, error) {
+					user := &usermodel.User {
 						Login: u.Login,
 						Password: u.Password,
 					}
