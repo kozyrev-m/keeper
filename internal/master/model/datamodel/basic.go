@@ -1,12 +1,12 @@
 package datamodel
 
-// BasePart contains the same information for all data records.
+// BasePart contains similar information for all data records.
 type BasePart struct {
-	ID int
-	OwnerID int
-	TypeID int
-	Metadata string
-	EncodedContent string
+	ID int `json:"id"`
+	OwnerID int `json:"owner_id"`
+	TypeID int `json:"type_id"`
+	Metadata string `json:"metadata"`
+	EncryptedContent string `json:"-"`
 }
 
 // SetID sets ID.
@@ -49,12 +49,12 @@ func (b *BasePart) GetMetadata() string {
 	return b.Metadata
 }
 
-// SetEncodedContent sets EncodedContent.
-func (b *BasePart) SetEncodedContent(content string) {
-	b.Metadata = content
+// SetEncodedContent sets EncryptedContent.
+func (b *BasePart) SetEncryptedContent(content string) {
+	b.EncryptedContent = content
 }
 
-// GetEncodedContent gets EncodedContent.
-func (b *BasePart) GetEncodedContent() string {
-	return b.EncodedContent
+// GetEncodedContent gets EncryptedContent.
+func (b *BasePart) GetEncryptedContent() string {
+	return b.EncryptedContent
 }

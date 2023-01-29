@@ -3,6 +3,7 @@ package httpserver
 import (
 	"encoding/json"
 	"fmt"
+	"log"
 	"net/http"
 
 	"github.com/kozyrev-m/keeper/internal/master/model/datamodel"
@@ -77,7 +78,7 @@ func (s *Server) handleWhoami() http.HandlerFunc {
 }
 
 // handleAddText adds some text.
-func (s *Server) handleCreateRecordWithText() http.HandlerFunc {
+func (s *Server) handleCreateText() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		req := &requestText{}
 		if err := json.NewDecoder(r.Body).Decode(req); err != nil {
@@ -96,20 +97,33 @@ func (s *Server) handleCreateRecordWithText() http.HandlerFunc {
 			Value: req.Text,
 		}
 
-		/*
-		data := &datamodel.DataRecord{
-			OwnerID:  u.ID,
-			TypeID:   1,
-			Metadata: req.Metadata,
-			Content:  content,
-		}
-		*/
-
 		if err := s.store.CreateDataRecord(content); err != nil {
 			s.error(w, r, http.StatusUnprocessableEntity, err)
 			return 
 		}
 
 		s.respond(w, r, http.StatusCreated, req)
+	}
+}
+
+// handleGetTexts gets all user texts.
+func (s *Server) handleGetTexts() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		u := r.Context().Value(ctxKeyUser).(*usermodel.User)
+
+		texts, err := s.store.FindTextsByOwner(u.ID)
+		if err != nil {
+			s.error(w, r, http.StatusUnprocessableEntity, err)
+			return 
+		}
+log.Printf("%+v", texts)
+
+		b, err := json.Marshal(texts)
+		if err != nil {
+			s.error(w, r, http.StatusUnprocessableEntity, err)
+			return
+		}
+
+		s.respond(w, r, http.StatusOK, string(b))
 	}
 }

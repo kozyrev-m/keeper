@@ -11,6 +11,7 @@ import (
 
 	"github.com/gorilla/mux"
 	"github.com/gorilla/sessions"
+	"github.com/kozyrev-m/keeper/internal/master/model/datamodel"
 	"github.com/kozyrev-m/keeper/internal/master/model/usermodel"
 	"github.com/kozyrev-m/keeper/internal/master/storage/store/sqlstore"
 )
@@ -22,6 +23,7 @@ type Store interface {
 	FindUserByID(int) (*usermodel.User, error)
 
 	CreateDataRecord(sqlstore.Content) error
+	FindTextsByOwner(int) ([]datamodel.Text, error)
 }
 
 // Server - lightweight server implementation for flexibility and independence.
@@ -58,5 +60,6 @@ func (s *Server) configureRouter() {
 	private.Use(s.authenticateUser)
 	private.HandleFunc("/whoami", s.handleWhoami()).Methods("GET")
 
-	private.HandleFunc("/text", s.handleCreateRecordWithText()).Methods(http.MethodPost)
+	private.HandleFunc("/text", s.handleCreateText()).Methods(http.MethodPost)
+	private.HandleFunc("/text", s.handleGetTexts()).Methods(http.MethodGet)
 }

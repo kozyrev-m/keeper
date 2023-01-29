@@ -3,7 +3,7 @@ package datamodel
 // Text contains text.
 type Text struct {
 	BasePart
-	Value string // Main part of the record
+	Value string `json:"text"` // Main part of the record 
 }
 
 // Encrypt encrypts content.
@@ -13,7 +13,7 @@ func (t *Text) Encrypt() error {
 		return err
 	}
 
-	t.EncodedContent = enc
+	t.SetEncryptedContent(enc)
 
 	return nil
 }
