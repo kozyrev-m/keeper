@@ -3,7 +3,6 @@ package httpserver
 import (
 	"encoding/json"
 	"fmt"
-	"log"
 	"net/http"
 
 	"github.com/kozyrev-m/keeper/internal/master/model/datamodel"
@@ -116,7 +115,6 @@ func (s *Server) handleGetTexts() http.HandlerFunc {
 			s.error(w, r, http.StatusUnprocessableEntity, err)
 			return 
 		}
-log.Printf("%+v", texts)
 
 		b, err := json.Marshal(texts)
 		if err != nil {
