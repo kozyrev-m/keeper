@@ -5,8 +5,10 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/gorilla/mux"
 	"github.com/kozyrev-m/keeper/internal/master/model/datamodel"
 	"github.com/kozyrev-m/keeper/internal/master/model/usermodel"
+	"github.com/kozyrev-m/keeper/internal/master/storage/store/filestorage"
 )
 
 // handleRegisterUser creates new user in the system.
@@ -143,5 +145,24 @@ func (s *Server) handleSaveFile() http.HandlerFunc {
 		}
 
 		s.respond(w, r, http.StatusOK, "")
+	}
+}
+
+// handleDownloadFile get user file.
+func (s *Server) handleDownloadFile() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		u := r.Context().Value(ctxKeyUser).(*usermodel.User)
+		
+		vars := mux.Vars(r)
+		filename := vars["filename"]
+		
+		filepath := fmt.Sprintf("%s/%d/%s", filestorage.Dir, u.ID, filename)
+		
+		if !filestorage.ExistFile(filepath) {
+			http.Error(w, errFileNotExist.Error(), http.StatusNoContent)
+			return
+		}
+
+		http.ServeFile(w, r, filepath)
 	}
 }

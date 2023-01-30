@@ -67,4 +67,6 @@ func (s *Server) configureRouter() {
 	private.HandleFunc("/text", s.handleGetTexts()).Methods(http.MethodGet)
 
 	private.HandleFunc("/file", s.handleSaveFile()).Methods(http.MethodPost)
+
+	private.HandleFunc("/file/{filename}", s.handleDownloadFile()).Methods(http.MethodGet)
 }

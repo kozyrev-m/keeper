@@ -42,6 +42,14 @@ func CreateFile(ownerid int, fname string, file multipart.File) error {
 	return nil
 }
 
+// DeleteFile deletes file.
 func DeleteFile(filepath string) error {
 	return os.Remove(filepath)
+}
+
+// ExistFile checks the existence of file.
+func ExistFile(file string) bool {
+	_, err := os.Stat(file)
+
+	return !errors.Is(err, os.ErrNotExist)
 }
