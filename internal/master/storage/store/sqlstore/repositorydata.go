@@ -145,3 +145,39 @@ func (s *Store) CreateFile(ownerID int, metadata string, filename string, file m
 
 	return nil
 }
+
+// GetFileList gets file list.
+func (s *Store) GetFileList(ownerID int) ([]datamodel.File, error) {
+	fileList := make([]datamodel.File, 0)
+	rows, err := s.db.Query(
+		"SELECT id, metadata, filepath FROM files WHERE owner_id = $1",
+		ownerID,
+	)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, store.ErrRecordNotFound
+		}
+
+		return nil, err
+	}
+
+	defer func() {
+		if err := rows.Close(); err != nil {
+			log.Println(err)
+		}
+	}()
+
+	for rows.Next() {
+		f := datamodel.File{}
+
+		if err := rows.Scan(&f.ID, &f.Metadata, &f.Filepath); err != nil {
+			return nil, err
+		}
+		
+		f.Name()
+
+		fileList = append(fileList, f)
+	}
+
+	return fileList, nil
+}

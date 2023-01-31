@@ -148,6 +148,27 @@ func (s *Server) handleSaveFile() http.HandlerFunc {
 	}
 }
 
+// handleFileList gets file list.
+func (s *Server) handleFileList() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		u := r.Context().Value(ctxKeyUser).(*usermodel.User)
+		
+		fileList, err := s.store.GetFileList(u.ID)
+		if err != nil {
+			s.error(w, r, http.StatusUnprocessableEntity, err)
+			return
+		}
+
+		b, err := json.Marshal(fileList)
+		if err != nil {
+			s.error(w, r, http.StatusUnprocessableEntity, err)
+			return
+		}
+
+		s.respond(w, r, http.StatusOK, string(b))
+	}
+} 
+
 // handleDownloadFile get user file.
 func (s *Server) handleDownloadFile() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
