@@ -1,6 +1,8 @@
 package httpserver
 
 import (
+	"mime/multipart"
+
 	"github.com/kozyrev-m/keeper/internal/master/model/datamodel"
 	"github.com/kozyrev-m/keeper/internal/master/model/usermodel"
 	"github.com/kozyrev-m/keeper/internal/master/storage/store/sqlstore"
@@ -13,6 +15,9 @@ type mockStore struct {
 
 	createDataRecord func(c sqlstore.Content) error
 	findTextsByOwner func(int) ([]datamodel.Text, error)
+
+	createFile func(int, string, string, multipart.File) error
+	getFileList func(int) ([]datamodel.File, error)
 }
 
 func (ms *mockStore) CreateUser(m *usermodel.User) error {
@@ -33,4 +38,12 @@ func (ms *mockStore) CreateDataRecord(c sqlstore.Content) error {
 
 func (ms *mockStore) FindTextsByOwner(userid int) ([]datamodel.Text, error) {
 	return ms.findTextsByOwner(userid)
+}
+
+func (ms *mockStore) CreateFile(ownerID int, metadata string, filename string, file multipart.File) error {
+	return ms.createFile(ownerID, metadata, filename, file)
+}
+
+func (ms *mockStore) GetFileList(ownerID int) ([]datamodel.File, error) {
+	return ms.getFileList(ownerID)
 }

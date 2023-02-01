@@ -2,10 +2,13 @@ package sqlstore
 
 import (
 	"database/sql"
+	"fmt"
 	"log"
+	"mime/multipart"
 
 	"github.com/kozyrev-m/keeper/internal/master/model/datamodel"
 	"github.com/kozyrev-m/keeper/internal/master/storage/store"
+	"github.com/kozyrev-m/keeper/internal/master/storage/store/filestorage"
 )
 
 const (
@@ -24,11 +27,11 @@ type Content interface {
 
 // CreateDataRecord creates record with content.
 func (s *Store) CreateDataRecord(c Content) error {
-	
+
 	if err := c.Encrypt(); err != nil {
 		return err
 	}
-	
+
 	var id int
 	if err := s.db.QueryRow(
 		"INSERT INTO private_data (owner_id, type_id, metadata, content) VALUES ($1, $2, $3, $4) RETURNING id",
@@ -85,15 +88,15 @@ func (s *Store) findRecords(ownerID int, typeID int) ([]datamodel.BasePart, erro
 		return nil, err
 	}
 
-	defer func () {
+	defer func() {
 		if err := rows.Close(); err != nil {
 			log.Println(err)
 		}
-	} ()
+	}()
 
 	for rows.Next() {
 		b := datamodel.BasePart{}
-		
+
 		if err := rows.Scan(&b.ID, &b.OwnerID, &b.TypeID, &b.Metadata, &b.EncryptedContent); err != nil {
 			return nil, err
 		}
@@ -101,4 +104,80 @@ func (s *Store) findRecords(ownerID int, typeID int) ([]datamodel.BasePart, erro
 	}
 
 	return baseParts, nil
+}
+
+// CreateFile creates file on disk and file record on db.
+func (s *Store) CreateFile(ownerID int, metadata string, filename string, file multipart.File) error {
+	filepath := fmt.Sprintf("%s/%d/%s", filestorage.Dir, ownerID, filename)
+
+	tx, err := s.db.Begin()
+	if err != nil {
+		return err
+	}
+
+	defer func() {
+		if err := tx.Rollback(); err != nil {
+			log.Println(err)
+		}
+	}()
+
+	if _, err := tx.Exec(
+		"INSERT INTO files (owner_id, metadata, filepath) VALUES ($1, $2, $3)",
+		ownerID,
+		metadata,
+		filepath,
+	); err != nil {
+		return err
+	}
+
+	// create file on disk
+	if err := filestorage.CreateFile(ownerID, filename, file); err != nil {
+		return err
+	}
+
+	if err := tx.Commit(); err != nil {
+		if errIn := filestorage.DeleteFile(filepath); errIn != nil {
+			return errIn
+		}
+
+		return err
+	}
+
+	return nil
+}
+
+// GetFileList gets file list.
+func (s *Store) GetFileList(ownerID int) ([]datamodel.File, error) {
+	fileList := make([]datamodel.File, 0)
+	rows, err := s.db.Query(
+		"SELECT id, metadata, filepath FROM files WHERE owner_id = $1",
+		ownerID,
+	)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, store.ErrRecordNotFound
+		}
+
+		return nil, err
+	}
+
+	defer func() {
+		if err := rows.Close(); err != nil {
+			log.Println(err)
+		}
+	}()
+
+	for rows.Next() {
+		f := datamodel.File{}
+
+		if err := rows.Scan(&f.ID, &f.Metadata, &f.Filepath); err != nil {
+			return nil, err
+		}
+		
+		f.Name()
+
+		fileList = append(fileList, f)
+	}
+
+	return fileList, nil
 }

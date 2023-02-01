@@ -7,6 +7,7 @@
 package httpserver
 
 import (
+	"mime/multipart"
 	"net/http"
 
 	"github.com/gorilla/mux"
@@ -24,6 +25,9 @@ type Store interface {
 
 	CreateDataRecord(sqlstore.Content) error
 	FindTextsByOwner(int) ([]datamodel.Text, error)
+
+	CreateFile(int, string, string, multipart.File) error
+	GetFileList(int) ([]datamodel.File, error)
 }
 
 // Server - lightweight server implementation for flexibility and independence.
@@ -53,13 +57,17 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 // configureRouter prepares endpoints and middlewares.
 func (s *Server) configureRouter() {
-	s.router.HandleFunc("/users", s.handleRegisterUser()).Methods("POST")
-	s.router.HandleFunc("/sessions", s.handleCreateSession()).Methods("POST")
+	s.router.HandleFunc("/users", s.handleRegisterUser()).Methods(http.MethodPost)
+	s.router.HandleFunc("/sessions", s.handleCreateSession()).Methods(http.MethodPost)
 
 	private := s.router.PathPrefix("/private").Subrouter()
 	private.Use(s.authenticateUser)
-	private.HandleFunc("/whoami", s.handleWhoami()).Methods("GET")
+	private.HandleFunc("/whoami", s.handleWhoami()).Methods(http.MethodGet)
 
 	private.HandleFunc("/text", s.handleCreateText()).Methods(http.MethodPost)
 	private.HandleFunc("/text", s.handleGetTexts()).Methods(http.MethodGet)
+
+	private.HandleFunc("/file", s.handleSaveFile()).Methods(http.MethodPost)
+	private.HandleFunc("/file", s.handleFileList()).Methods(http.MethodGet)
+	private.HandleFunc("/file/{filename}", s.handleDownloadFile()).Methods(http.MethodGet)
 }
