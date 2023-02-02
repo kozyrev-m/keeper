@@ -1,5 +1,6 @@
 package datamodel
 
 const (
-	password = "secretkey"
+	password  = "secretkey"
+	separator = "&&SEP&&"
 )

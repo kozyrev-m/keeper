@@ -2,10 +2,6 @@ package datamodel
 
 import "strings"
 
-const (
-	separator = "&&SEP&&"
-)
-
 // LoginPassword contains login password pair.
 type LoginPassword struct {
 	BasePart
