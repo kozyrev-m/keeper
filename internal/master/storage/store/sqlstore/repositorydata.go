@@ -71,6 +71,29 @@ func (s *Store) FindTextsByOwner(ownerid int) ([]datamodel.Text, error) {
 	return texts, nil
 }
 
+// FindPairsByOwner gets all login password pairs.
+func (s *Store) FindPairsByOwner(ownerid int) ([]datamodel.LoginPassword, error) {
+	baseParts, err := s.findRecords(ownerid, datamodel.TypePair)
+	if err != nil {
+		return nil, err
+	}
+
+	pairs := make([]datamodel.LoginPassword, 0, limit)
+	for _, base := range baseParts {
+		loginPassword := datamodel.LoginPassword{
+			BasePart: base,
+		}
+
+		if err := loginPassword.Decrypt(loginPassword.EncryptedContent); err != nil {
+			return nil, err
+		}
+
+		pairs = append(pairs, loginPassword)
+	}
+
+	return pairs, nil
+}
+
 // FindRecords gets data records by owner id and data type.
 func (s *Store) findRecords(ownerID int, typeID int) ([]datamodel.BasePart, error) {
 	baseParts := make([]datamodel.BasePart, 0, limit)
