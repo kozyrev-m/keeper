@@ -158,6 +158,27 @@ func (s *Server) handleAddPair() http.HandlerFunc {
 	}
 }
 
+// handleGetPairs gets login password pairs.
+func (s *Server) handleGetPairs() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		u := r.Context().Value(ctxKeyUser).(*usermodel.User)
+
+		pairs, err := s.store.FindPairsByOwner(u.ID)
+		if err != nil {
+			s.error(w, r, http.StatusUnprocessableEntity, err)
+			return
+		}
+
+		b, err := json.Marshal(pairs)
+		if err != nil {
+			s.error(w, r, http.StatusUnprocessableEntity, err)
+			return
+		}
+
+		s.respond(w, r, http.StatusOK, string(b))
+	}
+}
+
 // handleSaveFile saves user file.
 func (s *Server) handleSaveFile() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
