@@ -94,6 +94,29 @@ func (s *Store) FindPairsByOwner(ownerid int) ([]datamodel.LoginPassword, error)
 	return pairs, nil
 }
 
+// FindBankCardsByOwner gets all bank cards.
+func (s *Store) FindBankCardsByOwner(ownerid int) ([]datamodel.BankCard, error) {
+	baseParts, err := s.findRecords(ownerid, datamodel.TypeBank)
+	if err != nil {
+		return nil, err
+	}
+
+	bankcards := make([]datamodel.BankCard, 0, limit)
+	for _, base := range baseParts {
+		bankCard := datamodel.BankCard {
+			BasePart: base,
+		}
+
+		if err := bankCard.Decrypt(bankCard.EncryptedContent); err != nil {
+			return nil, err
+		}
+
+		bankcards = append(bankcards, bankCard)
+	}
+
+	return bankcards, nil
+}
+
 // FindRecords gets data records by owner id and data type.
 func (s *Store) findRecords(ownerID int, typeID int) ([]datamodel.BasePart, error) {
 	baseParts := make([]datamodel.BasePart, 0, limit)
