@@ -50,7 +50,7 @@ func (s *Store) CreateDataRecord(c Content) error {
 
 // FindTextsByOwner gets all texts.
 func (s *Store) FindTextsByOwner(ownerid int) ([]datamodel.Text, error) {
-	baseParts, err := s.findRecords(ownerid, 1)
+	baseParts, err := s.findRecords(ownerid, datamodel.TypeText)
 	if err != nil {
 		return nil, err
 	}
