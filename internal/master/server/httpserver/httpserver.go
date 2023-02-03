@@ -25,8 +25,8 @@ type Store interface {
 
 	CreateDataRecord(sqlstore.Content) error
 	FindTextsByOwner(int) ([]datamodel.Text, error)
-
 	FindPairsByOwner(int) ([]datamodel.LoginPassword, error)
+	FindBankCardsByOwner(int) ([]datamodel.BankCard, error)
 
 	CreateFile(int, string, string, multipart.File) error
 	GetFileList(int) ([]datamodel.File, error)
@@ -71,6 +71,9 @@ func (s *Server) configureRouter() {
 
 	private.HandleFunc("/pair", s.handleAddPair()).Methods(http.MethodPost)
 	private.HandleFunc("/pair", s.handleGetPairs()).Methods(http.MethodGet)
+
+	private.HandleFunc("/bankcard", s.handleAddBankCard()).Methods(http.MethodPost)
+	private.HandleFunc("/bankcard", s.handleGetBankCards()).Methods(http.MethodGet)
 
 	private.HandleFunc("/file", s.handleSaveFile()).Methods(http.MethodPost)
 	private.HandleFunc("/file", s.handleFileList()).Methods(http.MethodGet)

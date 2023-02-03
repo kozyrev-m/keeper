@@ -4,6 +4,9 @@ import (
 	"fmt"
 	"strconv"
 	"strings"
+
+	validation "github.com/go-ozzo/ozzo-validation"
+	"github.com/go-ozzo/ozzo-validation/is"
 )
 
 // BankCard contains bank card data.
@@ -13,6 +16,17 @@ type BankCard struct {
 	CVV       uint8  `json:"cvv"` // CVV/CVC (Card Verification Value/Code)
 	ValidThru string `json:"valid_thru"`
 	Name      string `json:"name"`
+}
+
+// Validate validates bank card data.
+func (bc *BankCard) Validate() error {
+	return validation.ValidateStruct(
+		bc,
+		validation.Field(&bc.PAN, validation.Required),
+		validation.Field(&bc.CVV, validation.Required),
+		validation.Field(&bc.ValidThru, validation.Required, validation.Date("02/06")),
+		validation.Field(&bc.Name, validation.Required, validation.Length(2, 100), is.Alpha),
+	)
 }
 
 // Encrypt encrypts content.

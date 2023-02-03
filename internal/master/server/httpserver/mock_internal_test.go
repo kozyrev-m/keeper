@@ -15,8 +15,8 @@ type mockStore struct {
 
 	createDataRecord func(c sqlstore.Content) error
 	findTextsByOwner func(int) ([]datamodel.Text, error)
-
 	findPairsByOwner func(int) ([]datamodel.LoginPassword, error)
+	findBankCardsByOwner func(int) ([]datamodel.BankCard, error)
 
 	createFile func(int, string, string, multipart.File) error
 	getFileList func(int) ([]datamodel.File, error)
@@ -44,6 +44,10 @@ func (ms *mockStore) FindTextsByOwner(userID int) ([]datamodel.Text, error) {
 
 func (ms *mockStore) FindPairsByOwner(userID int) ([]datamodel.LoginPassword, error) {
 	return ms.findPairsByOwner(userID)
+}
+
+func (ms *mockStore) FindBankCardsByOwner(userID int) ([]datamodel.BankCard, error) {
+	return ms.findBankCardsByOwner(userID)
 }
 
 func (ms *mockStore) CreateFile(ownerID int, metadata string, filename string, file multipart.File) error {
