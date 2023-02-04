@@ -1,11 +1,18 @@
 package httpclient
 
 import (
+	"bytes"
 	"errors"
+	"fmt"
+	"io"
 	"log"
+	"mime/multipart"
 	"net/http"
+	"os"
+	"path"
 
 	"github.com/kozyrev-m/keeper/internal/agent/model"
+	"github.com/kozyrev-m/keeper/internal/agent/config"
 )
 
 // RegisterUser creates new user.
@@ -96,4 +103,46 @@ func (c *Client) Whoami() (*model.User, error) {
 	u := c.responseUser(resp.Body)
 
 	return u, nil
+}
+
+// DownloadFile get file from server by name.
+func (c *Client) UploadFile(filepath string) error {
+	file, err := os.Open(filepath)
+	if err != nil {
+		return err
+	}
+	defer func () {
+		if err := file.Close(); err != nil {
+			log.Println(err)
+		}
+	} ()
+
+	body := &bytes.Buffer{}
+	writer := multipart.NewWriter(body)
+	part, err := writer.CreateFormFile("file", path.Base(filepath))
+	if err != nil {
+		return err
+	}
+	if _, err := io.Copy(part, file); err != nil {
+		return err
+	}
+
+	if err := writer.Close(); err != nil {
+		return err
+	}
+
+	req, err := http.NewRequest(http.MethodPost, fmt.Sprintf("http://%s%s", config.Address, "/private/file"), body)
+	if err != nil {
+		return err
+	}
+	req.Header.Set("Content-Type", writer.FormDataContentType())
+
+	resp, err := c.Do(req)
+	if err != nil {
+		return err
+	}
+
+	defer resp.Body.Close()
+
+	return nil
 }

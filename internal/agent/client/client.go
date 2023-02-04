@@ -2,7 +2,6 @@ package client
 
 import (
 	"errors"
-	"log"
 
 	"github.com/kozyrev-m/keeper/internal/agent/httpclient"
 	"github.com/kozyrev-m/keeper/internal/agent/model"
@@ -40,12 +39,18 @@ func StartClient() error {
 	}
 
 	// check session
-	u, err := client.Whoami()
+	_, err := client.Whoami()
 	if err != nil {
 		return err
 	}
 
-	log.Printf("user: %+v\n", u)
+	// upload file
+	if file && !(len(filepath) > 0) {
+		return errors.New("use flag --file with --upload")
+	}
+	if file && len(filepath) > 0 {
+		return client.UploadFile(filepath)
+	}
 
 	return nil
 }
