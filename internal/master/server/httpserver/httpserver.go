@@ -64,6 +64,7 @@ func (s *Server) configureRouter() {
 
 	private := s.router.PathPrefix("/private").Subrouter()
 	private.Use(s.authenticateUser)
+	
 	private.HandleFunc("/whoami", s.handleWhoami()).Methods(http.MethodGet)
 
 	private.HandleFunc("/text", s.handleCreateText()).Methods(http.MethodPost)

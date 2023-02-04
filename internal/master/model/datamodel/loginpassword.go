@@ -1,12 +1,26 @@
 package datamodel
 
-import "strings"
+import (
+	"strings"
+
+	validation "github.com/go-ozzo/ozzo-validation"
+	"github.com/go-ozzo/ozzo-validation/is"
+)
 
 // LoginPassword contains login password pair.
 type LoginPassword struct {
 	BasePart
 	Login    string
 	Password string
+}
+
+// Validate validates login-password pair.
+func (lp *LoginPassword) Validate() error {
+	return validation.ValidateStruct(
+		lp,
+		validation.Field(&lp.Login, validation.Required, validation.Length(5, 20), is.Alphanumeric),
+		validation.Field(&lp.Password, validation.Required, validation.Length(6, 20)),
+	)
 }
 
 // Encrypt encrypts content.

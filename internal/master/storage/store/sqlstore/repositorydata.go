@@ -17,6 +17,7 @@ const (
 
 // Content ...
 type Content interface {
+	Validate() error
 	Encrypt() error
 	SetID(int)
 	GetOwnerID() int
@@ -27,6 +28,9 @@ type Content interface {
 
 // CreateDataRecord creates record with content.
 func (s *Store) CreateDataRecord(c Content) error {
+	if err := c.Validate(); err != nil {
+		return err
+	}
 
 	if err := c.Encrypt(); err != nil {
 		return err
@@ -103,7 +107,7 @@ func (s *Store) FindBankCardsByOwner(ownerid int) ([]datamodel.BankCard, error) 
 
 	bankcards := make([]datamodel.BankCard, 0, limit)
 	for _, base := range baseParts {
-		bankCard := datamodel.BankCard {
+		bankCard := datamodel.BankCard{
 			BasePart: base,
 		}
 
@@ -219,7 +223,7 @@ func (s *Store) GetFileList(ownerID int) ([]datamodel.File, error) {
 		if err := rows.Scan(&f.ID, &f.Metadata, &f.Filepath); err != nil {
 			return nil, err
 		}
-		
+
 		f.Name()
 
 		fileList = append(fileList, f)

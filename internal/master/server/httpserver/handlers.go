@@ -128,7 +128,7 @@ func (s *Server) handleGetTexts() http.HandlerFunc {
 	}
 }
 
-// handleAddPair adds login password pair.
+// handleAddPair adds login-password pair.
 func (s *Server) handleAddPair() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		req := &requestPair{}
@@ -158,7 +158,7 @@ func (s *Server) handleAddPair() http.HandlerFunc {
 	}
 }
 
-// handleGetPairs gets login password pairs.
+// handleGetPairs gets login-password pairs.
 func (s *Server) handleGetPairs() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		u := r.Context().Value(ctxKeyUser).(*usermodel.User)
@@ -200,11 +200,6 @@ func (s *Server) handleAddBankCard() http.HandlerFunc {
 			CVV: req.CVV,
 			ValidThru: req.ValidThru,
 			Name: req.Name,
-		}
-
-		if err := content.Validate(); err != nil {
-			s.error(w, r, http.StatusBadRequest, err)
-			return
 		}
 
 		if err := s.store.CreateDataRecord(content); err != nil {
