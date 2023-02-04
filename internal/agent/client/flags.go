@@ -3,13 +3,14 @@ package client
 import "flag"
 
 var (
-	reg      bool
-	auth     bool
-	file     bool
+	reg  bool
+	auth bool
+	file bool
 
 	user     string
 	password string
-	filepath string
+	upload   string
+	download string
 )
 
 func parseFlags() {
@@ -19,7 +20,8 @@ func parseFlags() {
 
 	flag.StringVar(&user, "u", "", "login (use only with flag --reg or --auth)")
 	flag.StringVar(&password, "p", "", "password (use only with flag --reg or --auth)")
-	flag.StringVar(&filepath, "upload", "", "file path to upload to server (use only with flag --file)")
+	flag.StringVar(&upload, "upload", "", "file path to upload to server (use only with flag --file)")
+	flag.StringVar(&download, "download", "", "file name to download from server (use only with flag --file)")
 
 	flag.Parse()
 }

@@ -146,3 +146,36 @@ func (c *Client) UploadFile(filepath string) error {
 
 	return nil
 }
+
+// DownloadFile get file from server by name.
+func (c *Client) DownloadFile(filename string) error {
+
+	b, err := c.encoder(nil)
+	if err != nil {
+		return err
+	}
+
+	req, err := c.prepareRequest(fmt.Sprintf("/private/file/%s", filename), http.MethodGet, b)
+	if err != nil {
+		return err
+	}
+
+	resp, err := c.Do(req)
+	if err != nil {
+		return err
+	}
+
+	defer resp.Body.Close()
+
+	// Create the file
+	filepath := fmt.Sprintf("/tmp/%s", filename)
+	out, err := os.Create(filepath)
+	if err != nil {
+		return err
+	}
+	defer out.Close()
+
+	// Write the body to file
+	_, err = io.Copy(out, resp.Body)
+	return err
+}

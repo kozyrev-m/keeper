@@ -45,11 +45,14 @@ func StartClient() error {
 	}
 
 	// upload file
-	if file && !(len(filepath) > 0) {
-		return errors.New("use flag --file with --upload")
+	if file && !(len(upload) > 0 || len(download) > 0) {
+		return errors.New("use flag --file with --upload or --download")
 	}
-	if file && len(filepath) > 0 {
-		return client.UploadFile(filepath)
+	if file && len(upload) > 0 {
+		return client.UploadFile(upload)
+	}
+	if file && len(download) > 0 {
+		return client.DownloadFile(download)
 	}
 
 	return nil
