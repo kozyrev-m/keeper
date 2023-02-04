@@ -2,8 +2,12 @@ package main
 
 import (
 	"log"
+
+	"github.com/kozyrev-m/keeper/internal/agent/client"
 )
 
 func main() {
-	log.Println("Starting client...")
+	if err := client.StartClient(); err != nil {
+		log.Fatal(err)
+	}
 }
