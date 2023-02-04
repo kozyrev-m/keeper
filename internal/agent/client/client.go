@@ -39,20 +39,24 @@ func StartClient() error {
 	}
 
 	// check session
-	_, err := client.Whoami()
+	u, err := client.Whoami()
 	if err != nil {
 		return err
 	}
+	client.User = u
 
-	// upload file
-	if file && !(len(upload) > 0 || len(download) > 0) {
-		return errors.New("use flag --file with --upload or --download")
+	// list/upload/download file
+	if file && !(list || len(upload) > 0 || len(download) > 0) {
+		return errors.New("use flag --file with --list or --upload or --download")
 	}
 	if file && len(upload) > 0 {
 		return client.UploadFile(upload)
 	}
 	if file && len(download) > 0 {
 		return client.DownloadFile(download)
+	}
+	if file && list {
+		return client.ListFiles()
 	}
 
 	return nil

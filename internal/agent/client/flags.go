@@ -9,8 +9,10 @@ var (
 
 	user     string
 	password string
+
 	upload   string
 	download string
+	list     bool
 )
 
 func parseFlags() {
@@ -20,8 +22,10 @@ func parseFlags() {
 
 	flag.StringVar(&user, "u", "", "login (use only with flag --reg or --auth)")
 	flag.StringVar(&password, "p", "", "password (use only with flag --reg or --auth)")
+
 	flag.StringVar(&upload, "upload", "", "file path to upload to server (use only with flag --file)")
 	flag.StringVar(&download, "download", "", "file name to download from server (use only with flag --file)")
+	flag.BoolVar(&list, "list", false, "file list from server (use only with flag --file)")
 
 	flag.Parse()
 }

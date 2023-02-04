@@ -2,6 +2,7 @@ package httpclient
 
 import (
 	"bytes"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"io"
@@ -10,9 +11,9 @@ import (
 	"net/http"
 	"os"
 	"path"
+	"strconv"
 
 	"github.com/kozyrev-m/keeper/internal/agent/model"
-	"github.com/kozyrev-m/keeper/internal/agent/config"
 )
 
 // RegisterUser creates new user.
@@ -105,7 +106,7 @@ func (c *Client) Whoami() (*model.User, error) {
 	return u, nil
 }
 
-// DownloadFile get file from server by name.
+// DownloadFile gets file from server by name.
 func (c *Client) UploadFile(filepath string) error {
 	file, err := os.Open(filepath)
 	if err != nil {
@@ -131,7 +132,7 @@ func (c *Client) UploadFile(filepath string) error {
 		return err
 	}
 
-	req, err := http.NewRequest(http.MethodPost, fmt.Sprintf("http://%s%s", config.Address, "/private/file"), body)
+	req, err := c.prepareRequest("/private/file", http.MethodPost, body)
 	if err != nil {
 		return err
 	}
@@ -147,7 +148,7 @@ func (c *Client) UploadFile(filepath string) error {
 	return nil
 }
 
-// DownloadFile get file from server by name.
+// DownloadFile gets file from server by name.
 func (c *Client) DownloadFile(filename string) error {
 
 	b, err := c.encoder(nil)
@@ -178,4 +179,51 @@ func (c *Client) DownloadFile(filename string) error {
 	// Write the body to file
 	_, err = io.Copy(out, resp.Body)
 	return err
+}
+
+// ListFiles gets file list from server by owner.
+func (c *Client) ListFiles() error {
+
+	b, err := c.encoder(nil)
+	if err != nil {
+		return err
+	}
+
+	req, err := c.prepareRequest("/private/file", http.MethodGet, b)
+	if err != nil {
+		return err
+	}
+
+	resp, err := c.Do(req)
+	if err != nil {
+		return err
+	}
+
+	defer resp.Body.Close()
+
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return err
+	}
+
+	input := string(body)
+	input = input[1 : len(input)-2]
+	input = fmt.Sprintf("\"%s\"", input)
+
+	jsonInput, err := strconv.Unquote(input)
+	if err != nil {
+		return err
+	}
+
+	respFiles := &ResponseFiles{}
+	if err := json.Unmarshal([]byte(jsonInput), respFiles); err != nil {
+		return err
+	}
+
+	fmt.Printf("Your (%s) file list:\n", c.User.Login)
+	for _, file := range respFiles.Files {
+		fmt.Printf("- %s\n", file.Name)
+	}
+
+	return nil
 }
