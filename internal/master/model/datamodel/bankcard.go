@@ -2,7 +2,6 @@ package datamodel
 
 import (
 	"fmt"
-	"strconv"
 	"strings"
 
 	validation "github.com/go-ozzo/ozzo-validation"
@@ -12,8 +11,8 @@ import (
 // BankCard contains bank card data.
 type BankCard struct {
 	BasePart
-	PAN       uint64 `json:"pan"` // PAN (primary account number)
-	CVV       uint8  `json:"cvv"` // CVV/CVC (Card Verification Value/Code)
+	PAN       string `json:"pan"` // PAN (primary account number)
+	CVV       string `json:"cvv"` // CVV/CVC (Card Verification Value/Code)
 	ValidThru string `json:"valid_thru"`
 	Name      string `json:"name"`
 }
@@ -22,10 +21,10 @@ type BankCard struct {
 func (bc *BankCard) Validate() error {
 	return validation.ValidateStruct(
 		bc,
-		validation.Field(&bc.PAN, validation.Required),
-		validation.Field(&bc.CVV, validation.Required),
+		validation.Field(&bc.PAN, validation.Required, validation.Length(16, 19), is.CreditCard),
+		validation.Field(&bc.CVV, validation.Required, validation.Length(3, 3), is.Digit),
 		validation.Field(&bc.ValidThru, validation.Required, validation.Date("02/06")),
-		validation.Field(&bc.Name, validation.Required, validation.Length(2, 100), is.Alpha),
+		validation.Field(&bc.Name, validation.Required, validation.Length(2, 100), is.UpperCase),
 	)
 }
 
@@ -33,9 +32,9 @@ func (bc *BankCard) Validate() error {
 func (bc *BankCard) Encrypt() error {
 	value := fmt.Sprintf(
 		"%s%s%s%s%s%s%s",
-		strconv.FormatUint(bc.PAN, 10),
+		bc.PAN,
 		separator,
-		strconv.Itoa(int(bc.CVV)),
+		bc.CVV,
 		separator,
 		bc.ValidThru,
 		separator,
@@ -61,18 +60,8 @@ func (bc *BankCard) Decrypt(enc string) error {
 
 	bankcard := strings.Split(value, separator)
 
-	pan, err := strconv.ParseUint(bankcard[0], 10, 0)
-	if err != nil {
-		return err
-	}
-	bc.PAN = pan
-
-	cvv, err := strconv.ParseInt(bankcard[1], 10, 8)
-	if err != nil {
-		return err
-	}
-	bc.CVV = uint8(cvv)
-
+	bc.PAN = bankcard[0]
+	bc.CVV = bankcard[1]
 	bc.ValidThru = bankcard[2]
 	bc.Name = bankcard[3]
 

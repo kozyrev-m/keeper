@@ -12,8 +12,8 @@ import (
 func TestBankCard_EncryptDecrypt(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		bc := &datamodel.BankCard{
-			PAN:       10001000100010001111,
-			CVV:       123,
+			PAN:       "10001000100010001111",
+			CVV:       "123",
 			ValidThru: "11/23",
 			Name:      "John White",
 		}
@@ -34,8 +34,8 @@ func TestBankCard_EncryptDecrypt(t *testing.T) {
 
 	t.Run("unsuccess", func(t *testing.T) {
 		bc := &datamodel.BankCard{
-			PAN:       10001000100010001111,
-			CVV:       123,
+			PAN:       "10001000100010001111",
+			CVV:       "123",
 			ValidThru: "11/23",
 			Name:      "John White",
 		}
