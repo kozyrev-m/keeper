@@ -73,7 +73,7 @@ func (c *Client) LoginUser(u *model.User) error {
 		return err
 	}
 
-	log.Printf("successfully created session for user: '%s'!\n", u.Login)
+	log.Printf("session for '%s' was created successfully!\n", u.Login)
 
 	return nil
 }
@@ -107,7 +107,7 @@ func (c *Client) Whoami() (*model.User, error) {
 	return u, nil
 }
 
-// DownloadFile gets file from server by name.
+// UploadFile sent file to server.
 func (c *Client) UploadFile(filepath string) error {
 	file, err := os.Open(filepath)
 	if err != nil {
@@ -229,6 +229,7 @@ func (c *Client) ListFiles() error {
 	return nil
 }
 
+// AddBankCardData add bank card data.
 func (c *Client) AddBankCardData(bc *model.BankCard) error {
 	if err := bc.Validate(); err != nil {
 		return err
@@ -259,6 +260,7 @@ func (c *Client) AddBankCardData(bc *model.BankCard) error {
 	return nil
 }
 
+// AddBankCardData gets bank card list.
 func (c *Client) GetBankCards() error {
 	b, err := c.encoder(nil)
 	if err != nil {
