@@ -45,6 +45,22 @@ func StartClient() error {
 	}
 	client.User = u
 
+	// bank card data
+	if card && (len(pan) > 0 || len(validThru) > 0 || len(name) > 0 || len(cvv) > 0) {
+		bc := &model.BankCard{
+			PAN: pan,
+			ValidThru: validThru,
+			Name: name,
+			CVV: cvv,
+		}
+
+		return client.AddBankCardData(bc)
+	}
+
+	if card && !(len(pan) > 0 || len(validThru) > 0 || len(name) > 0 || len(cvv) > 0) {
+		return client.GetBankCards()
+	}
+
 	// list/upload/download file
 	if file && !(list || len(upload) > 0 || len(download) > 0) {
 		return errors.New("use flag --file with --list or --upload or --download")

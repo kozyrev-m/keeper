@@ -13,6 +13,7 @@ import (
 	"path"
 	"strconv"
 
+	"github.com/kozyrev-m/keeper/internal/agent/httpclient/sheme"
 	"github.com/kozyrev-m/keeper/internal/agent/model"
 )
 
@@ -215,7 +216,7 @@ func (c *Client) ListFiles() error {
 		return err
 	}
 
-	respFiles := &ResponseFiles{}
+	respFiles := &sheme.ResponseFiles{}
 	if err := json.Unmarshal([]byte(jsonInput), respFiles); err != nil {
 		return err
 	}
@@ -225,5 +226,81 @@ func (c *Client) ListFiles() error {
 		fmt.Printf("- %s\n", file.Name)
 	}
 
+	return nil
+}
+
+func (c *Client) AddBankCardData(bc *model.BankCard) error {
+	if err := bc.Validate(); err != nil {
+		return err
+	}
+
+	b, err := c.encoder(bc)
+	if err != nil {
+		return err
+	}
+
+	req, err := c.prepareRequest("/private/bankcard", http.MethodPost, b)
+	if err != nil {
+		return err
+	}
+
+	resp, err := c.Do(req)
+	if err != nil {
+		return err
+	}
+
+	defer resp.Body.Close()
+
+	if resp.StatusCode != 201 {
+		return errors.New(c.error(resp.Body))
+	}
+
+	log.Println("Add bank card data!")
+	return nil
+}
+
+func (c *Client) GetBankCards() error {
+	b, err := c.encoder(nil)
+	if err != nil {
+		return err
+	}
+
+	req, err := c.prepareRequest("/private/bankcard", http.MethodGet, b)
+	if err != nil {
+		return err
+	}
+
+	resp, err := c.Do(req)
+	if err != nil {
+		return err
+	}
+
+	defer resp.Body.Close()
+	
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return err
+	}
+	
+	input := string(body)
+	input = input[1 : len(input)-2]
+	input = fmt.Sprintf("\"%s\"", input)
+	
+	jsonInput, err := strconv.Unquote(input)
+	if err != nil {
+		return err
+	}
+
+	respCards := &sheme.ResponseCards{}
+	if err := json.Unmarshal([]byte(jsonInput), respCards); err != nil {
+		return err
+	}
+
+	fmt.Printf("Your (%s) bank card list:\n", c.User.Login)
+	
+	for id, card := range respCards.Cards {
+		fmt.Printf("%d. PAN: %s; Valid Thru Date: %s; Name: %s; CVV: %s\n", id + 1, card.PAN, card.Name, card.ValidThru, card.CVV)
+	}
+	
 	return nil
 }

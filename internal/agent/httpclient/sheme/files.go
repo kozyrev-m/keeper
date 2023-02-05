@@ -1,25 +1,15 @@
-package httpclient
+package sheme
 
 import (
 	"encoding/json"
 	"fmt"
+
+	"github.com/kozyrev-m/keeper/internal/agent/model"
 )
-
-// responseError - scheme for response error.
-type responseError struct {
-	Error string `json:"error"`
-}
-
-// File - scheme for file response.
-type File struct {
-	ID    int  `json:"id"`
-	Metadata string `json:"metadata"`
-	Name  string `json:"filename"`
-}
 
 // responseFiles - response with files.
 type ResponseFiles struct {
-	Files []File
+	Files []model.File
 }
 
 // UnmarshalJSON implements json.Unmarshaler.
@@ -41,17 +31,17 @@ func (rf *ResponseFiles) UnmarshalJSON(b []byte) error {
 }
 
 func (rf *ResponseFiles) unmarshalSingle(b []byte) error {
-	var f File
+	var f model.File
 	err := json.Unmarshal(b, &f)
 	if err != nil {
 		return err
 	}
-	rf.Files = []File{f}
+	rf.Files = []model.File{f}
 	return nil
 }
 
 func (rf *ResponseFiles) unmarshalMany(b []byte) error {
-	var files []File
+	var files []model.File
 	err := json.Unmarshal(b, &files)
 	if err != nil {
 		return err
