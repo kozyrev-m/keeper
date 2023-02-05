@@ -107,7 +107,7 @@ func (c *Client) Whoami() (*model.User, error) {
 	return u, nil
 }
 
-// UploadFile sent file to server.
+// UploadFile sents file to server.
 func (c *Client) UploadFile(filepath string) error {
 	file, err := os.Open(filepath)
 	if err != nil {
@@ -229,7 +229,7 @@ func (c *Client) ListFiles() error {
 	return nil
 }
 
-// AddBankCardData add bank card data.
+// AddBankCardData adds bank card data.
 func (c *Client) AddBankCardData(bc *model.BankCard) error {
 	if err := bc.Validate(); err != nil {
 		return err
@@ -260,7 +260,7 @@ func (c *Client) AddBankCardData(bc *model.BankCard) error {
 	return nil
 }
 
-// AddBankCardData gets bank card list.
+// GetBankCards gets bank card list.
 func (c *Client) GetBankCards() error {
 	b, err := c.encoder(nil)
 	if err != nil {
@@ -302,6 +302,80 @@ func (c *Client) GetBankCards() error {
 	
 	for id, card := range respCards.Cards {
 		fmt.Printf("%d. PAN: %s; Valid Thru Date: %s; Name: %s; CVV: %s\n", id + 1, card.PAN, card.Name, card.ValidThru, card.CVV)
+	}
+	
+	return nil
+}
+
+// AddLoginPasswordPair adds login-password pair.
+func (c *Client) AddLoginPasswordPair(p *model.Pair) error {
+	b, err := c.encoder(p)
+	if err != nil {
+		return err
+	}
+
+	req, err := c.prepareRequest("/private/pair", http.MethodPost, b)
+	if err != nil {
+		return err
+	}
+
+	resp, err := c.Do(req)
+	if err != nil {
+		return err
+	}
+
+	defer resp.Body.Close()
+
+	if resp.StatusCode != 201 {
+		return errors.New(c.error(resp.Body))
+	}
+
+	log.Println("Add login-password pair!")
+	return nil
+}
+
+// GetLoginPasswordPairs gets login-password pairs.
+func (c *Client) GetLoginPasswordPairs() error {
+	b, err := c.encoder(nil)
+	if err != nil {
+		return err
+	}
+
+	req, err := c.prepareRequest("/private/pair", http.MethodGet, b)
+	if err != nil {
+		return err
+	}
+
+	resp, err := c.Do(req)
+	if err != nil {
+		return err
+	}
+
+	defer resp.Body.Close()
+	
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return err
+	}
+	
+	input := string(body)
+	input = input[1 : len(input)-2]
+	input = fmt.Sprintf("\"%s\"", input)
+	
+	jsonInput, err := strconv.Unquote(input)
+	if err != nil {
+		return err
+	}
+
+	respPairs := &sheme.ResponsePairs{}
+	if err := json.Unmarshal([]byte(jsonInput), respPairs); err != nil {
+		return err
+	}
+
+	fmt.Printf("Your (%s) login-password pairs:\n", c.User.Login)
+	
+	for id, pair := range respPairs.Pairs {
+		fmt.Printf("%d. Login: %s; Password: %s\n", id + 1, pair.Login, pair.Password)
 	}
 	
 	return nil

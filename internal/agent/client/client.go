@@ -45,6 +45,20 @@ func StartClient() error {
 	}
 	client.User = u
 
+	// login-password pair
+	if pair && (len(login) > 0 || len(password) > 0) {
+		p := &model.Pair{
+			Login: login,
+			Password: password,
+		}
+
+		return client.AddLoginPasswordPair(p)
+	}
+
+	if pair && !(len(login) > 0 || len(password) > 0) {
+		return client.GetLoginPasswordPairs()
+	}
+
 	// bank card data
 	if card && (len(pan) > 0 || len(validThru) > 0 || len(name) > 0 || len(cvv) > 0) {
 		bc := &model.BankCard{

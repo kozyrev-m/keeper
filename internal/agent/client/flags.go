@@ -8,11 +8,15 @@ var (
 	auth bool
 	card bool
 	file bool
+	pair bool
 
 	// additional flags:
 	// use with reg/auth
 	user     string
 	password string
+
+	// use with pair
+	login    string
 
 	// use with file
 	upload   string
@@ -32,17 +36,22 @@ func parseFlags() {
 	flag.BoolVar(&auth, "auth", false, "authentication/authorization")
 	flag.BoolVar(&file, "file", false, "file")
 	flag.BoolVar(&card, "card", false, "bank card")
+	flag.BoolVar(&pair, "pair", false, "bank card")
 
 	// additional flags:
 	flag.StringVar(&user, "u", "", "login (use only with flag --reg or --auth)")
 	flag.StringVar(&password, "p", "", "password (use only with flag --reg or --auth)")
 
-	// use with file
+	// use with --pair
+	flag.StringVar(&login, "login", "", "login (use only with flag --pair)")
+	flag.StringVar(&password, "password", "", "password (use only with flag --pair)")
+
+	// use with --file
 	flag.StringVar(&upload, "upload", "", "file path to upload to server (use only with flag --file)")
 	flag.StringVar(&download, "download", "", "file name to download from server (use only with flag --file)")
 	flag.BoolVar(&list, "list", false, "file list from server (use only with flag --file)")
 
-	// use with card
+	// use with --card
 	flag.StringVar(&pan, "pan", "", "PAN - primary account number (use only with flag --card)")
 	flag.StringVar(&validThru, "till", "", "Valid Thru Date - the expiry date of the card printed on the card surface (use only with flag --card)")
 	flag.StringVar(&cvv, "cvv", "", "CVV/CVC - Card Verification Value/Code (use only with flag --card)")
