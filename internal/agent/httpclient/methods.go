@@ -380,3 +380,77 @@ func (c *Client) GetLoginPasswordPairs() error {
 	
 	return nil
 }
+
+// AddText adds some text.
+func (c *Client) AddText(txt *model.Text) error {
+	b, err := c.encoder(txt)
+	if err != nil {
+		return err
+	}
+
+	req, err := c.prepareRequest("/private/text", http.MethodPost, b)
+	if err != nil {
+		return err
+	}
+
+	resp, err := c.Do(req)
+	if err != nil {
+		return err
+	}
+
+	defer resp.Body.Close()
+
+	if resp.StatusCode != 201 {
+		return errors.New(c.error(resp.Body))
+	}
+
+	log.Println("Add text!")
+	return nil
+}
+
+// GetTexts gets texts.
+func (c *Client) GetTexts() error {
+	b, err := c.encoder(nil)
+	if err != nil {
+		return err
+	}
+
+	req, err := c.prepareRequest("/private/text", http.MethodGet, b)
+	if err != nil {
+		return err
+	}
+
+	resp, err := c.Do(req)
+	if err != nil {
+		return err
+	}
+
+	defer resp.Body.Close()
+	
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return err
+	}
+	
+	input := string(body)
+	input = input[1 : len(input)-2]
+	input = fmt.Sprintf("\"%s\"", input)
+	
+	jsonInput, err := strconv.Unquote(input)
+	if err != nil {
+		return err
+	}
+
+	respTexts := &sheme.ResponseTexts{}
+	if err := json.Unmarshal([]byte(jsonInput), respTexts); err != nil {
+		return err
+	}
+
+	fmt.Printf("Your (%s) texts:\n", c.User.Login)
+	
+	for id, text := range respTexts.Texts {
+		fmt.Printf("%d. text: %s\n", id + 1, text.Value)
+	}
+	
+	return nil
+}

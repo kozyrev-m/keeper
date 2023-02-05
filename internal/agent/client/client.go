@@ -45,6 +45,18 @@ func StartClient() error {
 	}
 	client.User = u
 
+	// text
+	if text && (len(content) > 0) {
+		txt := &model.Text{
+			Value: content,
+		}
+
+		return client.AddText(txt)
+	}
+	if text && !(len(content) > 0) {
+		return client.GetTexts()
+	}
+
 	// login-password pair
 	if pair && (len(login) > 0 || len(password) > 0) {
 		p := &model.Pair{
@@ -54,7 +66,6 @@ func StartClient() error {
 
 		return client.AddLoginPasswordPair(p)
 	}
-
 	if pair && !(len(login) > 0 || len(password) > 0) {
 		return client.GetLoginPasswordPairs()
 	}
@@ -70,7 +81,6 @@ func StartClient() error {
 
 		return client.AddBankCardData(bc)
 	}
-
 	if card && !(len(pan) > 0 || len(validThru) > 0 || len(name) > 0 || len(cvv) > 0) {
 		return client.GetBankCards()
 	}

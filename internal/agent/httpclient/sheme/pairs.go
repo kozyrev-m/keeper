@@ -7,7 +7,7 @@ import (
 	"github.com/kozyrev-m/keeper/internal/agent/model"
 )
 
-// ResponseCards - response with bank cards.
+// ResponseCards - response with login-password pairs.
 type ResponsePairs struct {
 	Pairs []model.Pair
 }
