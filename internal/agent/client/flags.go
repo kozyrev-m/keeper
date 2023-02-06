@@ -32,6 +32,9 @@ var (
 
 	// use with text
 	content string
+
+	// metadata
+	metadata string
 )
 
 func parseFlags() {
@@ -64,6 +67,9 @@ func parseFlags() {
 
 	// use with --text
 	flag.StringVar(&content, "content", "", "some text (use only with flag --text)")
+
+	// --metadata
+	flag.StringVar(&metadata, "metadata", "", "metadata -- meta information -- some text")
 
 	flag.Parse()
 }

@@ -90,7 +90,7 @@ func StartClient() error {
 		return errors.New("use flag --file with --list or --upload or --download")
 	}
 	if file && len(upload) > 0 {
-		return client.UploadFile(upload)
+		return client.UploadFile(upload, metadata)
 	}
 	if file && len(download) > 0 {
 		return client.DownloadFile(download)

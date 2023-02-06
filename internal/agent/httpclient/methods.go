@@ -80,7 +80,6 @@ func (c *Client) LoginUser(u *model.User) error {
 
 // Whoami gets user data.
 func (c *Client) Whoami() (*model.User, error) {
-
 	b, err := c.encoder(nil)
 	if err != nil {
 		return nil, err
@@ -108,7 +107,7 @@ func (c *Client) Whoami() (*model.User, error) {
 }
 
 // UploadFile sents file to server.
-func (c *Client) UploadFile(filepath string) error {
+func (c *Client) UploadFile(filepath, metadata string) error {
 	file, err := os.Open(filepath)
 	if err != nil {
 		return err
@@ -126,6 +125,10 @@ func (c *Client) UploadFile(filepath string) error {
 		return err
 	}
 	if _, err := io.Copy(part, file); err != nil {
+		return err
+	}
+
+	if err := writer.WriteField("metadata", metadata); err != nil {
 		return err
 	}
 
@@ -221,9 +224,10 @@ func (c *Client) ListFiles() error {
 		return err
 	}
 
-	fmt.Printf("Your (%s) file list:\n", c.User.Login)
-	for _, file := range respFiles.Files {
-		fmt.Printf("- %s\n", file.Name)
+	fmt.Printf("Your (%s) files:\n", c.User.Login)
+	for i, file := range respFiles.Files {
+		fmt.Println()
+		fmt.Printf("%d. :/%s [meta information: \"%s\"]\n", i + 1, file.Name, file.Metadata)
 	}
 
 	return nil
