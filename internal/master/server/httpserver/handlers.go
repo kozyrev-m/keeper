@@ -243,7 +243,7 @@ func (s *Server) handleSaveFile() http.HandlerFunc {
 			return
 		}
 
-		if err := s.store.CreateFile(u.ID, "some metadata", fheader.Filename, file); err != nil {
+		if err := s.store.CreateFile(u.ID, r.FormValue("metadata"), fheader.Filename, file); err != nil {
 			s.error(w, r, http.StatusUnprocessableEntity, err)
 			return
 		}

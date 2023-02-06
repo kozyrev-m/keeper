@@ -2,11 +2,12 @@ package main
 
 import (
 	"log"
-	"github.com/kozyrev-m/keeper/internal/agent/terminal"
+
+	"github.com/kozyrev-m/keeper/internal/agent/client"
 )
 
 func main() {
-	if err := terminal.NewTerminal().StartTerminal(); err != nil {
+	if err := client.StartClient(); err != nil {
 		log.Fatal(err)
 	}
 }

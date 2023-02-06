@@ -19,7 +19,7 @@ CREATE TABLE files (
     id BIGSERIAL NOT NULL PRIMARY KEY,
     owner_id INT NOT NULL,
     metadata VARCHAR NOT NULL,
-    filepath VARCHAR NOT NULL,
+    filepath VARCHAR NOT NULL UNIQUE,
     created_date TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL
 );
 -- +goose StatementEnd

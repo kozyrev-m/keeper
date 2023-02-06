@@ -5,11 +5,12 @@ import (
 	"io"
 	"log"
 
+	"github.com/kozyrev-m/keeper/internal/agent/httpclient/sheme"
 	"github.com/kozyrev-m/keeper/internal/agent/model"
 )
 
 func (c *Client) error(body io.ReadCloser) string {
-	res := &responseError{}
+	res := &sheme.ResponseError{}
 	if err := json.NewDecoder(body).Decode(res); err != nil {
 		log.Printf("can't decode data from json: %s", err.Error())
 	}
