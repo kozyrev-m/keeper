@@ -7,6 +7,7 @@ import (
 
 // BankCard contains bank card data.
 type BankCard struct {
+	Metadata  string `metadata:"metadata"`
 	PAN       string `json:"pan"` // PAN (primary account number)
 	CVV       string `json:"cvv"` // CVV/CVC (Card Verification Value/Code)
 	ValidThru string `json:"valid_thru"`

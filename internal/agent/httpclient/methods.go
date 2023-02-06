@@ -305,7 +305,11 @@ func (c *Client) GetBankCards() error {
 	fmt.Printf("Your (%s) bank card list:\n", c.User.Login)
 	
 	for id, card := range respCards.Cards {
-		fmt.Printf("%d. PAN: %s; Valid Thru Date: %s; Name: %s; CVV: %s\n", id + 1, card.PAN, card.Name, card.ValidThru, card.CVV)
+		fmt.Println()
+		fmt.Printf(
+			"%d. PAN: '%s'; Valid Thru Date: '%s'; Name: '%s'; CVV: '%s'\n[meta information: \"%s\"]\n",
+			id + 1, card.PAN, card.Name, card.ValidThru, card.CVV, card.Metadata,
+		)
 	}
 	
 	return nil
@@ -379,7 +383,8 @@ func (c *Client) GetLoginPasswordPairs() error {
 	fmt.Printf("Your (%s) login-password pairs:\n", c.User.Login)
 	
 	for id, pair := range respPairs.Pairs {
-		fmt.Printf("%d. Login: %s; Password: %s\n", id + 1, pair.Login, pair.Password)
+		fmt.Println()
+		fmt.Printf("%d. Login: '%s'; Password: '%s' [meta information: \"%s\"]\n", id + 1, pair.Login, pair.Password, pair.Metadata)
 	}
 	
 	return nil
@@ -453,7 +458,8 @@ func (c *Client) GetTexts() error {
 	fmt.Printf("Your (%s) texts:\n", c.User.Login)
 	
 	for id, text := range respTexts.Texts {
-		fmt.Printf("%d. text: %s\n", id + 1, text.Value)
+		fmt.Println()
+		fmt.Printf("%d. \"%s\" [meta information: \"%s\"]\n", id + 1, text.Value, text.Metadata)
 	}
 	
 	return nil

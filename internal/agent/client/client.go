@@ -48,7 +48,8 @@ func StartClient() error {
 	// text
 	if text && (len(content) > 0) {
 		txt := &model.Text{
-			Value: content,
+			Metadata: metadata,
+			Value:    content,
 		}
 
 		return client.AddText(txt)
@@ -60,7 +61,8 @@ func StartClient() error {
 	// login-password pair
 	if pair && (len(login) > 0 || len(password) > 0) {
 		p := &model.Pair{
-			Login: login,
+			Metadata: metadata,
+			Login:    login,
 			Password: password,
 		}
 
@@ -73,10 +75,11 @@ func StartClient() error {
 	// bank card data
 	if card && (len(pan) > 0 || len(validThru) > 0 || len(name) > 0 || len(cvv) > 0) {
 		bc := &model.BankCard{
-			PAN: pan,
+			Metadata:  metadata,
+			PAN:       pan,
 			ValidThru: validThru,
-			Name: name,
-			CVV: cvv,
+			Name:      name,
+			CVV:       cvv,
 		}
 
 		return client.AddBankCardData(bc)

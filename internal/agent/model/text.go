@@ -2,5 +2,6 @@ package model
 
 // Text contains text.
 type Text struct {
-	Value string `json:"text"`
+	Metadata string `metadata:"metadata"`
+	Value    string `json:"text"`
 }
