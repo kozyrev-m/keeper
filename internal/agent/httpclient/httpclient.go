@@ -9,6 +9,7 @@ import (
 	"net/http"
 
 	"github.com/kozyrev-m/keeper/internal/agent/config"
+	"github.com/kozyrev-m/keeper/internal/agent/model"
 
 	"github.com/juju/persistent-cookiejar"
 )
@@ -17,6 +18,7 @@ import (
 type Client struct {
 	http.Client
 	cookiejar *cookiejar.Jar
+	User *model.User
 }
 
 // New creates instance http-client.
