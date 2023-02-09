@@ -128,6 +128,110 @@ func (s *Server) handleGetTexts() http.HandlerFunc {
 	}
 }
 
+// handleAddPair adds login-password pair.
+func (s *Server) handleAddPair() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		req := &requestPair{}
+		if err := json.NewDecoder(r.Body).Decode(req); err != nil {
+			s.error(w, r, http.StatusBadRequest, err)
+			return
+		}
+
+		u := r.Context().Value(ctxKeyUser).(*usermodel.User)
+
+		content := &datamodel.LoginPassword{
+			BasePart: datamodel.BasePart{
+				OwnerID:  u.ID,
+				TypeID:   datamodel.TypePair,
+				Metadata: req.Metadata,
+			},
+			Login:    req.Login,
+			Password: req.Password,
+		}
+
+		if err := s.store.CreateDataRecord(content); err != nil {
+			s.error(w, r, http.StatusUnprocessableEntity, err)
+			return
+		}
+
+		s.respond(w, r, http.StatusCreated, req)
+	}
+}
+
+// handleGetPairs gets login-password pairs.
+func (s *Server) handleGetPairs() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		u := r.Context().Value(ctxKeyUser).(*usermodel.User)
+
+		pairs, err := s.store.FindPairsByOwner(u.ID)
+		if err != nil {
+			s.error(w, r, http.StatusUnprocessableEntity, err)
+			return
+		}
+
+		b, err := json.Marshal(pairs)
+		if err != nil {
+			s.error(w, r, http.StatusUnprocessableEntity, err)
+			return
+		}
+
+		s.respond(w, r, http.StatusOK, string(b))
+	}
+}
+
+// handleAddBankCard adds data of bank card.
+func (s *Server) handleAddBankCard() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		req := &requestBankCard{}
+		if err := json.NewDecoder(r.Body).Decode(req); err != nil {
+			s.error(w, r, http.StatusBadRequest, err)
+			return
+		}
+
+		u := r.Context().Value(ctxKeyUser).(*usermodel.User)
+
+		content := &datamodel.BankCard {
+			BasePart: datamodel.BasePart{
+				OwnerID:  u.ID,
+				TypeID:   datamodel.TypeBank,
+				Metadata: req.Metadata,
+			},
+			PAN: req.PAN,
+			CVV: req.CVV,
+			ValidThru: req.ValidThru,
+			Name: req.Name,
+		}
+
+		if err := s.store.CreateDataRecord(content); err != nil {
+			s.error(w, r, http.StatusUnprocessableEntity, err)
+			return
+		}
+
+		s.respond(w, r, http.StatusCreated, req)
+	}
+}
+
+// handleGetBankCards gets bank card data.
+func (s *Server) handleGetBankCards() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		u := r.Context().Value(ctxKeyUser).(*usermodel.User)
+
+		cards, err := s.store.FindBankCardsByOwner(u.ID)
+		if err != nil {
+			s.error(w, r, http.StatusUnprocessableEntity, err)
+			return
+		}
+
+		b, err := json.Marshal(cards)
+		if err != nil {
+			s.error(w, r, http.StatusUnprocessableEntity, err)
+			return
+		}
+
+		s.respond(w, r, http.StatusOK, string(b))
+	}
+}
+
 // handleSaveFile saves user file.
 func (s *Server) handleSaveFile() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -152,7 +256,7 @@ func (s *Server) handleSaveFile() http.HandlerFunc {
 func (s *Server) handleFileList() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		u := r.Context().Value(ctxKeyUser).(*usermodel.User)
-		
+
 		fileList, err := s.store.GetFileList(u.ID)
 		if err != nil {
 			s.error(w, r, http.StatusUnprocessableEntity, err)
@@ -167,18 +271,18 @@ func (s *Server) handleFileList() http.HandlerFunc {
 
 		s.respond(w, r, http.StatusOK, string(b))
 	}
-} 
+}
 
 // handleDownloadFile get user file.
 func (s *Server) handleDownloadFile() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		u := r.Context().Value(ctxKeyUser).(*usermodel.User)
-		
+
 		vars := mux.Vars(r)
 		filename := vars["filename"]
-		
+
 		filepath := fmt.Sprintf("%s/%d/%s", filestorage.Dir, u.ID, filename)
-		
+
 		if !filestorage.ExistFile(filepath) {
 			http.Error(w, errFileNotExist.Error(), http.StatusNoContent)
 			return
