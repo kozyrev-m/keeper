@@ -14,9 +14,11 @@ hello:
 	@echo "2. test-coverage"
 
 migrations-up:
-	goose -dir=./migrations postgres "host=localhost port=5432 dbname=keeper password=12345 sslmode=disable" up
+	@goose -dir=./migrations postgres "host=localhost port=5433 dbname=keeper_dev user=admin password=12345 sslmode=disable" up
+	@goose -dir=./migrations postgres "host=localhost port=5434 dbname=keeper_test user=admin password=12345 sslmode=disable" up
 
 migrations-down:
-	goose -dir=./migrations postgres "host=localhost port=5432 dbname=keeper password=12345 sslmode=disable" down
+	@goose -dir=./migrations postgres "host=localhost port=5433 dbname=keeper_dev user=admin password=12345 sslmode=disable" down
+	@goose -dir=./migrations postgres "host=localhost port=5434 dbname=keeper_test user=admin password=12345 sslmode=disable" down
 
 .DEFAULT_GOAL= hello
