@@ -1,3 +1,6 @@
+create-client:
+	go build -v -o keeper-client ./cmd/client/main.go
+
 test:
 	@sudo docker-compose --file docker/test/docker-compose.yaml up -d
 	@go test ./...
@@ -15,9 +18,12 @@ test-coverage:
 	@rm coverage.out
 
 hello:
-	@echo "Use 'make' with a specific command:"
-	@echo "1. test"
-	@echo "2. test-coverage"
+	@echo "Use 'make' with a specific commands"
+	@echo " "
+	@echo "Commands: "
+	@echo " create-client		create client to connect to keeper"
+	@echo " test			testing"
+	@echo " test-coverage		another testing statistic"
 
 migrations-up:
 	@goose -dir=./migrations postgres "host=localhost port=5433 dbname=keeper_dev user=admin password=12345 sslmode=disable" up

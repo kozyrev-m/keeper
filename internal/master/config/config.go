@@ -37,25 +37,20 @@ func NewConfig() *Config {
 }
 
 // configure sets actual values to 'Config'.
-func (c *Config) configure() *Config {
+func (c *Config) configure() {
 	c.parseFlags()
 
 	// 1. get config from file
 	c.configFromFile()
-
 	// DEBUG: log.Printf("config from file:%+v", c)
 
 	// 2. get config from flags
 	c.configFromFlags()
-
 	// DEBUG: log.Printf("config from flags:%+v", c)
 
 	// 3. get config from env
 	c.configFromEnv()
-
 	// DEBUG: log.Printf("config from env:%+v", c)
-
-	return c
 }
 
 // configFromFile gets configs from file.
@@ -105,8 +100,8 @@ func (c *Config) parseFlags() {
 	flag.StringVar(&configFile, "c", "", "path to config file")
 	flag.StringVar(&configFile, "config", "", "path to config file")
 
-	flag.StringVar(&address, "a", "", "http-server address")
-	flag.StringVar(&databaseDSN, "d", "", "database dsn")
+	flag.StringVar(&address, "a", c.Address, "http-server address")
+	flag.StringVar(&databaseDSN, "d", c.DatabaseDSN, "database dsn")
 
 	flag.Parse()
 }
