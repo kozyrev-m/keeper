@@ -41,7 +41,7 @@ keeper - система для хранения приватных данных:
 ## Схема БД <a name="arch-db"/>
 ![Схема БД](docs/arch-db.png)
 
-Подробнее [migrations/keeper.sql](migrations/keeper.sql)
+Подробнее [migrations/01_keeper.sql](migrations/01_keeper.sql)
 
 
 # Работа приложения <a name="operation"/>
