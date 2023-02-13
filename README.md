@@ -8,9 +8,15 @@
     - [Загрузка файлов](#arch-scheme-files)
   - [Схема БД](#arch-db)
 
-Работа приложения(#operation)
-- [Конфигурация сервера](#operation-config-server)
-- [Клиент](#operation-client)
+- [Работа приложения](#operation)
+  - [Конфигурация сервера](#operation-config-server)
+  - [Клиент](#operation-client)
+    - [Регистрация пользователя](#operation-client-register)
+    - [Логин](#operation-client-login)
+    - [Произвольные текстовые данные](#operation-client-text)
+    - [Пары логин/пароль](#operation-client-pair)
+    - [Банковские карты](#operation-client-bankcard)
+    - [Файлы](#operation-client-file)
 
 # Общая информация <a name="info"/>
 keeper - система для хранения приватных данных: тексты, пароли, данные банковских карт, файлы
@@ -55,18 +61,105 @@ keeper - система для хранения приватных данных:
   
 Использование: `$keeper-client --<command-flag> [<arg-flags>]`  
   
-Сценарии:  
-  
-1. Регистрация пользователя:  
+### Регистрация пользователя <a name="operation-client-register"/>  
 ```
 флаг-команда:
 --register
 
-   флаги-аргументы:
+    флаги-аргументы:
+    --user  
+    --password  
+
+Пример:  
+$ keeper-client --register --user=john --password=1a23456b
+```
+  
+### Создание сессии пользователя <a name="operation-client-login"/>  
+```
+флаг-команда:
+--login
+
+    флаги-аргументы:
     --user  
     --password
-    --metadata
+
+Пример:  
+$ keeper-client --login --user=john --password=1a23456b
+```  
+  
+### Произвольные текстовые данные <a name="operation-client-text"/>  
 ```
-Пример: `$ keeper-client --register --user=john --password=1a23456b --metadata="some data for more info"`
-    
-    
+флаг-команда:
+--text
+
+    флаги-аргументы:
+    --content  
+    --metadata
+
+Примеры:
+// Добавить произвольный текст
+$ keeper-client --text --content="some text" --metatdata="some metadata"
+
+// Получить все тексты авторизованного пользователя
+$ keeper-client --text
+```  
+  
+### Пары логин/пароль <a name="operation-client-pair"/>  
+```
+флаг-команда:
+--pair
+
+    флаги-аргументы:
+    --user
+    --password
+    --metadata
+
+Примеры:
+// Добавить пару логин/пароль
+$ keeper-client --pair --user="newuser" --password="newpassword" --metatdata="some metadata for new user"
+
+// Получить все пары логин/пароль
+$ keeper-client --pair
+```  
+  
+### Банковские карты <a name="operation-client-bankcard"/>  
+```
+флаг-команда:
+--card
+
+    флаги-аргументы:
+    --pan           PAN - Номер платежной карты
+    --till          Valid Thru Date - дата истечения срока действия карты, указанная на поверхности карты 
+    --cvv           CVC/CVV — коды верификации пластикового носителя, которые подтверждают его подлинность
+    --name          Имя владельца карты, напечатанное на лицевой стороне карты
+
+    --metadata
+
+Примеры:
+// Добавить данные банковский карты
+$ keeper-client --card --pan="4321 6543 3214 8766" --till="11/23" --cvv="123" --name="JOHN SMITH" --metatdata="some metadata for new user"
+
+// Получить все данные банковских карт
+$ keeper-client --card
+```  
+
+### Файлы <a name="operation-client-file"/>  
+```
+флаг-команда:
+--file
+
+    флаги-аргументы:
+    --upload          загрузить файл на сервер
+    --download        скачать файл
+
+    --metadata
+Примеры:
+// Загрузить файл
+$ keeper-client --file --upload=/path/to/file --metatdata="some file for upload"
+
+// Скачать файл
+$ keeper-client --file --download="file"
+
+// Получить список загруженных на сервер файлов
+$ keeper-client --file
+```      
