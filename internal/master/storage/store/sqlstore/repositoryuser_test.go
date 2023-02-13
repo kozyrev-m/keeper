@@ -11,14 +11,10 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-var (
-	databaseURL = "host=localhost port=5432 dbname=keeper_test password=12345 sslmode=disable"
-)
-
 func TestUserRepository_CreateUser(t *testing.T) {
 	db, teardown := sqlstore.TestDB(t, databaseURL)
 	defer teardown()
-	
+
 	s := sqlstore.New(db)
 	u := usermodel.TestUser(t)
 	err := s.CreateUser(u)

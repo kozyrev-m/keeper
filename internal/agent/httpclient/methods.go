@@ -41,7 +41,7 @@ func (c *Client) RegisterUser(u *model.User) error {
 		return errors.New(c.error(resp.Body))
 	}
 
-	log.Printf("successfully created user with login '%s' in system keeper!\n", u.Login)
+	log.Printf("user with login '%s' created in system keeper!\n", u.Login)
 
 	return nil
 }
@@ -73,7 +73,7 @@ func (c *Client) LoginUser(u *model.User) error {
 		return err
 	}
 
-	log.Printf("session for '%s' was created successfully!\n", u.Login)
+	log.Printf("session for '%s' created successfully!\n", u.Login)
 
 	return nil
 }
@@ -112,11 +112,11 @@ func (c *Client) UploadFile(filepath, metadata string) error {
 	if err != nil {
 		return err
 	}
-	defer func () {
+	defer func() {
 		if err := file.Close(); err != nil {
 			log.Println(err)
 		}
-	} ()
+	}()
 
 	body := &bytes.Buffer{}
 	writer := multipart.NewWriter(body)
@@ -149,6 +149,12 @@ func (c *Client) UploadFile(filepath, metadata string) error {
 
 	defer resp.Body.Close()
 
+	if resp.StatusCode != 200 {
+		return errors.New(c.error(resp.Body))
+	}
+
+	fmt.Println("File uploaded!")
+
 	return nil
 }
 
@@ -172,6 +178,10 @@ func (c *Client) DownloadFile(filename string) error {
 
 	defer resp.Body.Close()
 
+	if resp.StatusCode != 200 {
+		return errors.New(c.error(resp.Body))
+	}
+
 	// Create the file
 	filepath := fmt.Sprintf("/tmp/%s", filename)
 	out, err := os.Create(filepath)
@@ -181,8 +191,13 @@ func (c *Client) DownloadFile(filename string) error {
 	defer out.Close()
 
 	// Write the body to file
-	_, err = io.Copy(out, resp.Body)
-	return err
+	if _, err = io.Copy(out, resp.Body); err != nil {
+		return err
+	}
+
+	fmt.Printf("File '%s' downloaded!", filepath)
+
+	return nil
 }
 
 // ListFiles gets file list from server by owner.
@@ -224,10 +239,10 @@ func (c *Client) ListFiles() error {
 		return err
 	}
 
-	fmt.Printf("Your (%s) files:\n", c.User.Login)
+	fmt.Printf("(%s) your files:\n", c.User.Login)
 	for i, file := range respFiles.Files {
 		fmt.Println()
-		fmt.Printf("%d. :/%s [meta information: \"%s\"]\n", i + 1, file.Name, file.Metadata)
+		fmt.Printf("%d. :/%s [meta information: \"%s\"]\n", i+1, file.Name, file.Metadata)
 	}
 
 	return nil
@@ -260,7 +275,7 @@ func (c *Client) AddBankCardData(bc *model.BankCard) error {
 		return errors.New(c.error(resp.Body))
 	}
 
-	log.Println("Add bank card data!")
+	log.Println("Bank card data has been added!")
 	return nil
 }
 
@@ -282,16 +297,16 @@ func (c *Client) GetBankCards() error {
 	}
 
 	defer resp.Body.Close()
-	
+
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return err
 	}
-	
+
 	input := string(body)
 	input = input[1 : len(input)-2]
 	input = fmt.Sprintf("\"%s\"", input)
-	
+
 	jsonInput, err := strconv.Unquote(input)
 	if err != nil {
 		return err
@@ -302,16 +317,16 @@ func (c *Client) GetBankCards() error {
 		return err
 	}
 
-	fmt.Printf("Your (%s) bank card list:\n", c.User.Login)
-	
+	fmt.Printf("(%s) your bank cards:\n", c.User.Login)
+
 	for id, card := range respCards.Cards {
 		fmt.Println()
 		fmt.Printf(
 			"%d. PAN: '%s'; Valid Thru Date: '%s'; Name: '%s'; CVV: '%s'\n[meta information: \"%s\"]\n",
-			id + 1, card.PAN, card.Name, card.ValidThru, card.CVV, card.Metadata,
+			id+1, card.PAN, card.Name, card.ValidThru, card.CVV, card.Metadata,
 		)
 	}
-	
+
 	return nil
 }
 
@@ -338,7 +353,7 @@ func (c *Client) AddLoginPasswordPair(p *model.Pair) error {
 		return errors.New(c.error(resp.Body))
 	}
 
-	log.Println("Add login-password pair!")
+	log.Println("login-password pair added!")
 	return nil
 }
 
@@ -360,16 +375,16 @@ func (c *Client) GetLoginPasswordPairs() error {
 	}
 
 	defer resp.Body.Close()
-	
+
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return err
 	}
-	
+
 	input := string(body)
 	input = input[1 : len(input)-2]
 	input = fmt.Sprintf("\"%s\"", input)
-	
+
 	jsonInput, err := strconv.Unquote(input)
 	if err != nil {
 		return err
@@ -380,13 +395,13 @@ func (c *Client) GetLoginPasswordPairs() error {
 		return err
 	}
 
-	fmt.Printf("Your (%s) login-password pairs:\n", c.User.Login)
-	
+	fmt.Printf("(%s) your login-password pairs:\n", c.User.Login)
+
 	for id, pair := range respPairs.Pairs {
 		fmt.Println()
-		fmt.Printf("%d. Login: '%s'; Password: '%s' [meta information: \"%s\"]\n", id + 1, pair.Login, pair.Password, pair.Metadata)
+		fmt.Printf("%d. Login: '%s'; Password: '%s' [meta information: \"%s\"]\n", id+1, pair.Login, pair.Password, pair.Metadata)
 	}
-	
+
 	return nil
 }
 
@@ -413,7 +428,7 @@ func (c *Client) AddText(txt *model.Text) error {
 		return errors.New(c.error(resp.Body))
 	}
 
-	log.Println("Add text!")
+	log.Println("text added!")
 	return nil
 }
 
@@ -435,16 +450,16 @@ func (c *Client) GetTexts() error {
 	}
 
 	defer resp.Body.Close()
-	
+
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return err
 	}
-	
+
 	input := string(body)
 	input = input[1 : len(input)-2]
 	input = fmt.Sprintf("\"%s\"", input)
-	
+
 	jsonInput, err := strconv.Unquote(input)
 	if err != nil {
 		return err
@@ -455,12 +470,12 @@ func (c *Client) GetTexts() error {
 		return err
 	}
 
-	fmt.Printf("Your (%s) texts:\n", c.User.Login)
-	
+	fmt.Printf("(%s) your texts:\n", c.User.Login)
+
 	for id, text := range respTexts.Texts {
 		fmt.Println()
-		fmt.Printf("%d. \"%s\" [meta information: \"%s\"]\n", id + 1, text.Value, text.Metadata)
+		fmt.Printf("%d. \"%s\" [meta information: \"%s\"]\n", id+1, text.Value, text.Metadata)
 	}
-	
+
 	return nil
 }

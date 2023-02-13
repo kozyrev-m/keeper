@@ -13,10 +13,10 @@ func StartClient() error {
 	client := httpclient.New()
 
 	// register new user in system
-	if reg && !(len(user) > 0 && len(password) > 0) {
-		return errors.New("use flag --reg with -u and -p")
+	if register && !(len(user) > 0 && len(password) > 0) {
+		return errors.New("use flag --register with --user and --password")
 	}
-	if reg && (len(user) > 0) && (len(password) > 0) {
+	if register && (len(user) > 0) && (len(password) > 0) {
 		u := &model.User{
 			Login:    user,
 			Password: password,
@@ -26,10 +26,10 @@ func StartClient() error {
 	}
 
 	// create session user
-	if auth && !(len(user) > 0 && len(password) > 0) {
-		return errors.New("use flag --auth with -u and -p")
+	if login && !(len(user) > 0 && len(password) > 0) {
+		return errors.New("use flag --login with --user and --password")
 	}
-	if auth && (len(user) > 0) && (len(password) > 0) {
+	if login && (len(user) > 0) && (len(password) > 0) {
 		u := &model.User{
 			Login:    user,
 			Password: password,
@@ -59,16 +59,16 @@ func StartClient() error {
 	}
 
 	// login-password pair
-	if pair && (len(login) > 0 || len(password) > 0) {
+	if pair && (len(user) > 0 || len(password) > 0) {
 		p := &model.Pair{
 			Metadata: metadata,
-			Login:    login,
+			Login:    user,
 			Password: password,
 		}
 
 		return client.AddLoginPasswordPair(p)
 	}
-	if pair && !(len(login) > 0 || len(password) > 0) {
+	if pair && !(len(user) > 0 || len(password) > 0) {
 		return client.GetLoginPasswordPairs()
 	}
 
@@ -89,17 +89,14 @@ func StartClient() error {
 	}
 
 	// list/upload/download file
-	if file && !(list || len(upload) > 0 || len(download) > 0) {
-		return errors.New("use flag --file with --list or --upload or --download")
+	if file && !(len(upload) > 0 || len(download) > 0) {
+		return client.ListFiles()
 	}
 	if file && len(upload) > 0 {
 		return client.UploadFile(upload, metadata)
 	}
 	if file && len(download) > 0 {
 		return client.DownloadFile(download)
-	}
-	if file && list {
-		return client.ListFiles()
 	}
 
 	return nil
