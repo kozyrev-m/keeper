@@ -10,7 +10,7 @@ import (
 )
 
 const (
-	Dir = "/tmp/filestorage"
+	Dir = "/opt/keeper/filestorage"
 )
 
 // Create creates some file.

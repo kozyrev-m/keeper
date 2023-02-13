@@ -73,7 +73,7 @@ func (c *Client) LoginUser(u *model.User) error {
 		return err
 	}
 
-	log.Printf("session created for '%s' successfully!\n", u.Login)
+	log.Printf("session for '%s' created successfully!\n", u.Login)
 
 	return nil
 }
@@ -153,7 +153,7 @@ func (c *Client) UploadFile(filepath, metadata string) error {
 		return errors.New(c.error(resp.Body))
 	}
 
-	log.Println("File uploaded!")
+	fmt.Println("File uploaded!")
 
 	return nil
 }
@@ -195,7 +195,7 @@ func (c *Client) DownloadFile(filename string) error {
 		return err
 	}
 
-	log.Println("File downloaded!")
+	fmt.Printf("File '%s' downloaded!", filepath)
 
 	return nil
 }
