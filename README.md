@@ -186,8 +186,6 @@ $ keeper-client --file
 `$ make build-client`  
   
 После генерации, бинарный файл клиента находится в директории `bin/`.  
-  
-- Запуск сервера:  
 Например, команда клиента для регистрации пользователя выглядит так:  
 `$ ./bin/keeper-client --register --user=newuser --password=secret`  
   
