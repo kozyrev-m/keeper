@@ -11,92 +11,89 @@ func StartClient() error {
 	parseFlags()
 
 	client := httpclient.New()
-
-	// register new user in system
-	if register && !(len(user) > 0 && len(password) > 0) {
-		return errors.New("use flag --register with --user and --password")
-	}
-	if register && (len(user) > 0) && (len(password) > 0) {
-		u := &model.User{
-			Login:    user,
-			Password: password,
+	
+	if action == "text" || action == "pair" || action == "card" || action == "file" {
+		// check session for --action [text | pair | card | file]
+		u, err := client.Whoami()
+		if err != nil {
+			return err
 		}
 
-		return client.RegisterUser(u)
+		client.User = u
 	}
 
-	// create session user
-	if login && !(len(user) > 0 && len(password) > 0) {
-		return errors.New("use flag --login with --user and --password")
-	}
-	if login && (len(user) > 0) && (len(password) > 0) {
-		u := &model.User{
-			Login:    user,
-			Password: password,
+	switch action {
+	case "register": // register new user in system
+		if (len(user) > 0) && (len(password) > 0) {
+			u := &model.User{
+				Login:    user,
+				Password: password,
+			}
+
+			return client.RegisterUser(u)
+		} else {
+			return errors.New("use --action \"register\" with --user and --password")
 		}
+	case "login": // create session user
+		if (len(user) > 0) && (len(password) > 0) {
+			u := &model.User{
+				Login:    user,
+				Password: password,
+			}
 
-		return client.LoginUser(u)
-	}
-
-	// check session
-	u, err := client.Whoami()
-	if err != nil {
-		return err
-	}
-	client.User = u
-
-	// text
-	if text && (len(content) > 0) {
-		txt := &model.Text{
-			Metadata: metadata,
-			Value:    content,
+			return client.LoginUser(u)
+		} else {
+			return errors.New("use --action \"login\" with --user and --password")
 		}
+	case "text": // work with text
+		if !(len(content) > 0) {
+			return client.GetTexts()
+		} else {
+			txt := &model.Text{
+				Metadata: metadata,
+				Value:    content,
+			}
 
-		return client.AddText(txt)
-	}
-	if text && !(len(content) > 0) {
-		return client.GetTexts()
-	}
-
-	// login-password pair
-	if pair && (len(user) > 0 || len(password) > 0) {
-		p := &model.Pair{
-			Metadata: metadata,
-			Login:    user,
-			Password: password,
+			return client.AddText(txt)
 		}
+	case "pair": // work with login-password pairs
+		if !(len(user) > 0 || len(password) > 0) {
+			return client.GetLoginPasswordPairs()
+		} else {
+			p := &model.Pair{
+				Metadata: metadata,
+				Login:    user,
+				Password: password,
+			}
 
-		return client.AddLoginPasswordPair(p)
-	}
-	if pair && !(len(user) > 0 || len(password) > 0) {
-		return client.GetLoginPasswordPairs()
-	}
-
-	// bank card data
-	if card && (len(pan) > 0 || len(validThru) > 0 || len(name) > 0 || len(cvv) > 0) {
-		bc := &model.BankCard{
-			Metadata:  metadata,
-			PAN:       pan,
-			ValidThru: validThru,
-			Name:      name,
-			CVV:       cvv,
+			return client.AddLoginPasswordPair(p)
 		}
+	case "card": // work with bank cards
+		if !(len(pan) > 0 || len(validThru) > 0 || len(name) > 0 || len(cvv) > 0) {
+			return client.GetBankCards()
+		} else {
+			bc := &model.BankCard{
+				Metadata:  metadata,
+				PAN:       pan,
+				ValidThru: validThru,
+				Name:      name,
+				CVV:       cvv,
+			}
 
-		return client.AddBankCardData(bc)
-	}
-	if card && !(len(pan) > 0 || len(validThru) > 0 || len(name) > 0 || len(cvv) > 0) {
-		return client.GetBankCards()
-	}
-
-	// list/upload/download file
-	if file && !(len(upload) > 0 || len(download) > 0) {
-		return client.ListFiles()
-	}
-	if file && len(upload) > 0 {
-		return client.UploadFile(upload, metadata)
-	}
-	if file && len(download) > 0 {
-		return client.DownloadFile(download)
+			return client.AddBankCardData(bc)
+		}
+	case "file": // work with files
+		if !(len(upload) > 0 || len(download) > 0) {
+			return client.ListFiles()
+		}
+		if len(upload) > 0 {
+			return client.UploadFile(upload, metadata)
+		}
+		if len(download) > 0 {
+			return client.DownloadFile(download)
+		}
+	default:
+		return errors.New("--action is not defined")
 	}
 
 	return nil
