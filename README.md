@@ -4,8 +4,8 @@
 - [Архитектура](#arch)
   - [Блок-схемы](#arch-scheme)
     - [Регистрация/Логин](#arch-scheme-auth)
-    - [Добавление приватных данных](#arch-scheme-privatedata)
-    - [Загрузка файлов](#arch-scheme-files)
+    - [Добавление/Получение приватных данных](#arch-scheme-privatedata)
+    - [Загрузка/Скачивание файлов](#arch-scheme-files)
   - [Схема БД](#arch-db)
 
 - [Работа приложения](#operation)
@@ -20,7 +20,7 @@
   - [Запуск приложения](#operation-run)
     - [Последовательность команд для запуска сервера](#operation-run-sequence)
     - [Запуск клиента](#operation-run-client)
-- [TODO](#todo)
+- [Дальнейшее развитие проекта](#todo)
 
 # Общая информация <a name="info"/>
 keeper - система для хранения приватных данных: тексты, пароли, данные банковских карт, файлы
@@ -32,13 +32,12 @@ keeper - система для хранения приватных данных:
 ### Регистрация/Логин <a name="arch-scheme-auth"/>
 ![Регистрация/Логин](docs/arch-scheme-auth.png)
 
+### Добавление/Получение приватных данных <a name="arch-scheme-privatedata"/>
+![Добавление/Получение приватных данных](docs/arch-scheme-privatedata.png)
 
-### Добавление приватных данных <a name="arch-scheme-privatedata"/>
-![Регистрация/Логин](docs/arch-scheme-privatedata.png)
 
-
-### Загрузка файлов <a name="arch-scheme-files"/>
-![Регистрация/Логин](docs/arch-scheme-files.png)
+### Загрузка/Скачивание файлов <a name="arch-scheme-files"/>
+![Загрузка/Скачивание файлов](docs/arch-scheme-files.png)
 
 ## Схема БД <a name="arch-db"/>
 ![Схема БД](docs/arch-db.png)
@@ -61,75 +60,75 @@ keeper - система для хранения приватных данных:
 ## Клиент <a name="operation-client"/>
 
 Клиент представляет собой CLI-приложение.  
-Сценарий работы клиета конфигурируется флагом-командой и соответствующим флагами-аргументами.  
+Сценарий работы клиента конфигурируется флагом-командой и соответствующим флагами-аргументами.  
   
-Шаблон вызова: `$keeper-client --<command-flag> [<arg-flags>]`  
+Шаблон вызова: `$keeper-client --action=<команда> [<флаги-аргументы>]`  
   
 ### Регистрация пользователя <a name="operation-client-register"/>  
 ```
-флаг-команда:
---register
+команда:
+--action=register
 
     флаги-аргументы:
     --user  
     --password  
 
 Пример:  
-$ keeper-client --register --user=john --password=1a23456b
+$ keeper-client --action=register --user=someuser --password=secret
 ```
   
 ### Создание сессии пользователя <a name="operation-client-login"/>  
 ```
-флаг-команда:
---login
+команда:
+--action=login
 
     флаги-аргументы:
     --user  
     --password
 
 Пример:  
-$ keeper-client --login --user=john --password=1a23456b
+$ keeper-client --action=login --user=someuser --password=secret
 ```  
   
 ### Произвольные текстовые данные <a name="operation-client-text"/>  
 ```
 флаг-команда:
---text
+--action=text
 
     флаги-аргументы:
     --content  
-    --metadata
+    --metadata        дополнительная информация (текстовые данные)
 
 Примеры:
 // Добавить произвольный текст
-$ keeper-client --text --content="some text" --metatdata="some metadata"
+$ keeper-client --action=text --content="some text" --metatdata="some metadata"
 
 // Получить все тексты авторизованного пользователя
-$ keeper-client --text
+$ keeper-client --action=text
 ```  
   
 ### Пары логин/пароль <a name="operation-client-pair"/>  
 ```
 флаг-команда:
---pair
+--action=pair
 
     флаги-аргументы:
     --user
     --password
-    --metadata
+    --metadata        дополнительная информация (текстовые данные)
 
 Примеры:
 // Добавить пару логин/пароль
-$ keeper-client --pair --user="newuser" --password="newpassword" --metatdata="some metadata for new user"
+$ keeper-client --action=pair --user="newuser" --password="newpassword" --metatdata="some metadata for new user"
 
 // Получить все пары логин/пароль
-$ keeper-client --pair
+$ keeper-client --action=pair
 ```  
   
 ### Банковские карты <a name="operation-client-bankcard"/>  
 ```
 флаг-команда:
---card
+--action=card
 
     флаги-аргументы:
     --pan           PAN - Номер платежной карты
@@ -137,14 +136,14 @@ $ keeper-client --pair
     --cvv           CVC/CVV — коды верификации пластикового носителя, которые подтверждают его подлинность
     --name          Имя владельца карты, напечатанное на лицевой стороне карты
 
-    --metadata
+    --metadata      дополнительная информация (текстовые данные)
 
 Примеры:
-// Добавить данные банковский карты
-$ keeper-client --card --pan="4321 6543 3214 8766" --till="11/23" --cvv="123" --name="JOHN SMITH" --metatdata="some metadata for new user"
+// Добавить данные банковской карты
+$ keeper-client --action=card --pan="4321 6543 3214 8766" --till="11/23" --cvv="123" --name="JOHN SMITH" --metatdata="some metadata for new user"
 
 // Получить все данные банковских карт
-$ keeper-client --card
+$ keeper-client --action=card
 ```  
 
 ### Файлы <a name="operation-client-file"/>  
@@ -156,16 +155,16 @@ $ keeper-client --card
     --upload          загрузить файл на сервер
     --download        скачать файл
 
-    --metadata
+    --metadata        дополнительная информация (текстовые данные)
 Примеры:
 // Загрузить файл
-$ keeper-client --file --upload=/path/to/file --metatdata="some file for upload"
+$ keeper-client --action=file --upload=/path/to/file --metatdata="some file for upload"
 
 // Скачать файл
-$ keeper-client --file --download="file"
+$ keeper-client --action=file --download="file"
 
 // Получить список загруженных на сервер файлов
-$ keeper-client --file
+$ keeper-client --action=file
 ```  
   
 ## Запуск приложения <a name="operation-run">  
@@ -189,6 +188,7 @@ $ keeper-client --file
 Например, команда клиента для регистрации пользователя выглядит так:  
 `$ ./bin/keeper-client --register --user=newuser --password=secret`  
   
-# TODO <a name="todo"/>
-1. Добавить в функционал системы возможность редактирования/удаления объектов.
-2. Для клиента добавить поддержку терминального интерфейса
+# Дальнейшее развитие проекта <a name="todo"/>
+Можно добавить в приложение следующий функционал:  
+- Возможность редактирования/удаления объектов
+- Поддержка терминального интерфейса для клиента
