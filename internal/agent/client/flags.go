@@ -4,12 +4,7 @@ import "flag"
 
 var (
 	// main flags:
-	register bool
-	login    bool
-	card     bool
-	file     bool
-	pair     bool
-	text     bool
+	action string
 
 	// additional flags:
 	// use with register/login
@@ -35,38 +30,32 @@ var (
 
 func parseFlags() {
 	// main flags
-	flag.BoolVar(&register, "register", false, "register new user")
-	flag.BoolVar(&login, "login", false, "login to your account")
-	flag.BoolVar(&text, "text", false, "text")
-	flag.BoolVar(&card, "card", false, "bank card")
-	flag.BoolVar(&pair, "pair", false, "login-password pair")
-	flag.BoolVar(&file, "file", false, "file")
+	flag.StringVar(&action, "action", "", "--action [register | login | text | card]")
 
 	// additional flags:
+	//  use with --action "register", "login" or "pair"
+	flag.StringVar(&user, "u", "", "login (use only with --action \"register\", \"login\" or \"pair\")")
+	flag.StringVar(&password, "p", "", "password (use only with --action \"register\", \"login\" or \"pair\")")
 
-	// use with --register or --login or --pair
-	flag.StringVar(&user, "u", "", "login (use only with flag --register or --login or --pair)")
-	flag.StringVar(&password, "p", "", "password (use only with flag --register or --login or --pair)")
+	//  use with --action "register", "login" or "pair"
+	flag.StringVar(&user, "user", "", "user (use only with --action \"register\", \"login\" or \"pair\")")
+	flag.StringVar(&password, "password", "", "password (use only with --action \"register\", \"login\" or \"pair\")")
 
-	// use with --register or --login or --pair
-	flag.StringVar(&user, "user", "", "user (use only with flag --register or --login or --pair)")
-	flag.StringVar(&password, "password", "", "password (use only with --register or --login or --pair)")
+	//  use with --action "text"
+	flag.StringVar(&content, "content", "", "some text (use only with --action \"text\")")
 
-	// use with --text
-	flag.StringVar(&content, "content", "", "some text (use only with flag --text)")
+	//  use with --action "card"
+	flag.StringVar(&pan, "pan", "", "PAN - primary account number (use only with --action \"card\")")
+	flag.StringVar(&validThru, "till", "", "Valid Thru Date - the expiry date of the card printed on the card surface (use only with --action \"card\")")
+	flag.StringVar(&cvv, "cvv", "", "CVV/CVC - Card Verification Value/Code (use only with --action \"card\")")
+	flag.StringVar(&name, "name", "", "cardholder name - name of the owner, printed on the front of the card (use only with --action \"card\")")
 
-	// use with --card
-	flag.StringVar(&pan, "pan", "", "PAN - primary account number (use only with flag --card)")
-	flag.StringVar(&validThru, "till", "", "Valid Thru Date - the expiry date of the card printed on the card surface (use only with flag --card)")
-	flag.StringVar(&cvv, "cvv", "", "CVV/CVC - Card Verification Value/Code (use only with flag --card)")
-	flag.StringVar(&name, "name", "", "cardholder name - name of the owner, printed on the front of the card (use only with flag --card)")
+	//  use with --action "file"
+	flag.StringVar(&upload, "upload", "", "file (set path of file) to upload to server (use only with --action \"file\")")
+	flag.StringVar(&download, "download", "", "file (set name of file) to download from server (use only with with --action \"file\")")
 
-	// use with --file
-	flag.StringVar(&upload, "upload", "", "file path to upload to server (use only with flag --file)")
-	flag.StringVar(&download, "download", "", "file name to download from server (use only with flag --file)")
-
-	// --metadata
-	flag.StringVar(&metadata, "metadata", "", "metadata -- meta information -- some text")
+	// --metadata - optionally
+	flag.StringVar(&metadata, "metadata", "", "metadata - meta information; some additional text")
 
 	flag.Parse()
 }

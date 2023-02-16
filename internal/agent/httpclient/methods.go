@@ -195,7 +195,7 @@ func (c *Client) DownloadFile(filename string) error {
 		return err
 	}
 
-	fmt.Printf("File '%s' downloaded!", filepath)
+	fmt.Printf("File '%s' downloaded!\n", filepath)
 
 	return nil
 }

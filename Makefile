@@ -12,7 +12,7 @@ build-server: ## build server and put binary to bin/
 	go build -v -o ./bin/keeper-server ./cmd/server/main.go
 
 ## Run:
-run-server: ## run server with configurations from ./configs/keeper.json (only after up data base)
+run-server: ## run server with configurations from ./configs/keeper.json (only after database up)
 ifeq ($(wildcard ./bin/keeper-server),)
 	@go build -v -o ./bin/keeper-server ./cmd/server/main.go
 endif
