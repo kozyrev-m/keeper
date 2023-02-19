@@ -1,9 +1,19 @@
 package datamodel
 
+import validation "github.com/go-ozzo/ozzo-validation"
+
 // Text contains text.
 type Text struct {
 	BasePart
 	Value string `json:"text"` // Main part of the record 
+}
+
+// Validate validates text.
+func (t *Text) Validate() error {
+	return validation.ValidateStruct(
+		t,
+		validation.Field(&t.Value, validation.Required, validation.Length(1, 150)),
+	)
 }
 
 // Encrypt encrypts content.

@@ -17,6 +17,7 @@ const (
 
 // Content ...
 type Content interface {
+	Validate() error
 	Encrypt() error
 	SetID(int)
 	GetOwnerID() int
@@ -27,6 +28,9 @@ type Content interface {
 
 // CreateDataRecord creates record with content.
 func (s *Store) CreateDataRecord(c Content) error {
+	if err := c.Validate(); err != nil {
+		return err
+	}
 
 	if err := c.Encrypt(); err != nil {
 		return err
@@ -50,7 +54,7 @@ func (s *Store) CreateDataRecord(c Content) error {
 
 // FindTextsByOwner gets all texts.
 func (s *Store) FindTextsByOwner(ownerid int) ([]datamodel.Text, error) {
-	baseParts, err := s.findRecords(ownerid, 1)
+	baseParts, err := s.findRecords(ownerid, datamodel.TypeText)
 	if err != nil {
 		return nil, err
 	}
@@ -69,6 +73,52 @@ func (s *Store) FindTextsByOwner(ownerid int) ([]datamodel.Text, error) {
 	}
 
 	return texts, nil
+}
+
+// FindPairsByOwner gets all login password pairs.
+func (s *Store) FindPairsByOwner(ownerid int) ([]datamodel.LoginPassword, error) {
+	baseParts, err := s.findRecords(ownerid, datamodel.TypePair)
+	if err != nil {
+		return nil, err
+	}
+
+	pairs := make([]datamodel.LoginPassword, 0, limit)
+	for _, base := range baseParts {
+		loginPassword := datamodel.LoginPassword{
+			BasePart: base,
+		}
+
+		if err := loginPassword.Decrypt(loginPassword.EncryptedContent); err != nil {
+			return nil, err
+		}
+
+		pairs = append(pairs, loginPassword)
+	}
+
+	return pairs, nil
+}
+
+// FindBankCardsByOwner gets all bank cards.
+func (s *Store) FindBankCardsByOwner(ownerid int) ([]datamodel.BankCard, error) {
+	baseParts, err := s.findRecords(ownerid, datamodel.TypeBank)
+	if err != nil {
+		return nil, err
+	}
+
+	bankcards := make([]datamodel.BankCard, 0, limit)
+	for _, base := range baseParts {
+		bankCard := datamodel.BankCard{
+			BasePart: base,
+		}
+
+		if err := bankCard.Decrypt(bankCard.EncryptedContent); err != nil {
+			return nil, err
+		}
+
+		bankcards = append(bankcards, bankCard)
+	}
+
+	return bankcards, nil
 }
 
 // FindRecords gets data records by owner id and data type.
@@ -173,7 +223,7 @@ func (s *Store) GetFileList(ownerID int) ([]datamodel.File, error) {
 		if err := rows.Scan(&f.ID, &f.Metadata, &f.Filepath); err != nil {
 			return nil, err
 		}
-		
+
 		f.Name()
 
 		fileList = append(fileList, f)
