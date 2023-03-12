@@ -6,10 +6,10 @@ RESET  := $(shell tput -Txterm sgr0)
 
 ## Build:
 build-client: ## build client and put binary to bin/
-	go build -v -o ./bin/keeper-client ./cmd/client/main.go
+	go build -v -o ./keeper-client ./cmd/client/main.go
 
 build-server: ## build server and put binary to bin/
-	go build -v -o ./bin/keeper-server ./cmd/server/main.go
+	go build -v -o ./keeper-server ./cmd/server/main.go
 
 ## Run:
 run-server: ## run server with configurations from ./configs/keeper.json (only after database up)
