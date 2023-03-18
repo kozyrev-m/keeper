@@ -7,7 +7,7 @@ services:
     ports:
       - "5432:5432"
     volumes:
-      - ./psql_data:/var/lib/postgresql/pgdata
+      - /tmp/psql_data:/var/lib/postgresql/pgdata
     environment:
       POSTGRES_DB: keeper_dev
       POSTGRES_USER: postgres
