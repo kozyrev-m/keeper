@@ -1,0 +1,28 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:14.3-alpine
+    container_name: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./psql_data:/var/lib/postgresql/pgdata
+    environment:
+      POSTGRES_DB: keeper_dev
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 12345
+      PGDATA: /var/lib/postgresql/pgdata
+    restart: always
+  app:
+    image: keeper
+    build: ..
+    container_name: application
+    ports:
+      - "8080:8080"
+    environment:
+      DATABASE_DSN: postgres://postgres:12345@db:5432/keeper_dev
+      SESSION_KEY: a2b3c4d5e6fffffffffffffffffffffffffffff
+    restart: always
+    links:
+      - db
