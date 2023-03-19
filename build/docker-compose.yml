@@ -7,7 +7,7 @@ services:
     ports:
       - "5432:5432"
     volumes:
-      - /tmp/psql_data:/var/lib/postgresql/pgdata
+      - /opt/keeper/psql_data:/var/lib/postgresql/pgdata
     environment:
       POSTGRES_DB: keeper_dev
       POSTGRES_USER: postgres
@@ -20,6 +20,8 @@ services:
     container_name: application
     ports:
       - "8080:8080"
+    volumes:
+      - /opt/keeper/filestorage:/opt/keeper/filestorage
     environment:
       ADDRESS: 0.0.0.0:8080
       DATABASE_DSN: postgres://postgres:12345@db:5432/keeper_dev
