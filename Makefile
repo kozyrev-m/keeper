@@ -8,30 +8,7 @@ RESET  := $(shell tput -Txterm sgr0)
 build-client: ## build client and put binary to bin/
 	go build -v -o ./keeper-client ./cmd/client/main.go
 
-build-server: ## build server and put binary to bin/
-	go build -v -o ./keeper-server ./cmd/server/main.go
-
-## Run (ARCHIVE):
-run-server: ## run server with configurations from ./configs/keeper.json (only after database up)
-ifeq ($(wildcard ./bin/keeper-server),)
-	@go build -v -o ./bin/keeper-server ./cmd/server/main.go
-endif
-	./bin/keeper-server --config=./configs/keeper.json
-
-## Docker (ARCHIVE):
-docker-db-up: ## create and start container with develop data base (db)
-	docker-compose --file docker/dev/docker-compose.yaml up -d
-
-docker-db-down: ## stop and remove container with develop db
-	docker-compose --file docker/dev/docker-compose.yaml down
-
-docker-testdb-up: ## create and start container with test db
-	docker-compose --file docker/test/docker-compose.yaml up -d
-
-docker-testdb-down: ## stop and remove container with test db
-	docker-compose --file docker/test/docker-compose.yaml down
-
-## Docker 19-03-2023:
+## Docker:
 docker-keeper-up: ## create and run containers with keeper and database
 	docker-compose --file build/docker-compose.yml up -d
 
