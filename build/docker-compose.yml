@@ -21,6 +21,7 @@ services:
     ports:
       - "8080:8080"
     environment:
+      ADDRESS: 0.0.0.0:8080
       DATABASE_DSN: postgres://postgres:12345@db:5432/keeper_dev
       SESSION_KEY: a2b3c4d5e6fffffffffffffffffffffffffffff
     restart: always

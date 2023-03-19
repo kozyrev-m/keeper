@@ -16,5 +16,4 @@ RUN \
     # Build keeper
     make build-server && chmod +x ./keeper-server
 
-
 CMD ["./keeper-server"]
