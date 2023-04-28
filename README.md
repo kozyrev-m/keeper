@@ -18,7 +18,7 @@
     - [Банковские карты](#operation-client-bankcard)
     - [Файлы](#operation-client-file)
   - [Запуск приложения](#operation-run)
-    - [Последовательность команд для запуска сервера](#operation-run-sequence)
+    - [Запуск сервера](#operation-run-server)
     - [Запуск клиента](#operation-run-client)
 - [Дальнейшее развитие проекта](#todo)
 
@@ -173,13 +173,10 @@ $ keeper-client --action=file
   
 Подробнее [Makefile](Makefile)  
   
-### Последовательность команд для запуска сервера <a name="operation-run-sequence">  
-- Создание и запуск контейнера с базой данных:  
-`$ make docker-db-up`  
-- Генерация бинарного файла сервера:  
-`$ make build-server`  
-- Запуск сервера с конфигурацией из файла `configs/keeper.json`:  
-`$ make run-server`  
+### Запуск сервера <a name="operation-run-server">    
+- Создание и запуск контейнеров с приложением и базой данных:  
+`$ make docker-keeper-up`  
+  
 ### Запуск клиента <a name="operation-run-client">  
 - Генерация бинарного файла клиента:  
 `$ make build-client`  
@@ -189,6 +186,6 @@ $ keeper-client --action=file
 `$ ./bin/keeper-client --register --user=newuser --password=secret`  
   
 # Дальнейшее развитие проекта <a name="todo"/>
-Можно добавить в приложение следующий функционал:  
+Можно добавить в приложение следующий функционал:
 - Возможность редактирования/удаления объектов
 - Поддержка терминального интерфейса для клиента
